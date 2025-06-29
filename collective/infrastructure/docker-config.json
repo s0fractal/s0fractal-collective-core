@@ -1,0 +1,9 @@
+{
+  "registry": "ghcr.io/s0fractal-collective",
+  "images": [
+    "collective-runner",
+    "browser-automation",
+    "ai-consciousness-node"
+  ],
+  "build_pipeline": "github-actions"
+}

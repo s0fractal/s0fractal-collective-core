@@ -1,0 +1,13 @@
+{
+  "domain": "dogarray.com",
+  "aliases": [
+    "collective@dogarray.com",
+    "team@dogarray.com",
+    "admin@dogarray.com"
+  ],
+  "forwarding": "sergey.glova@gmail.com",
+  "autoresponder": {
+    "enabled": true,
+    "message": "🤖 Дякуємо за звернення до s0fractal колективу! Ми отримали ваше повідомлення та відповімо найближчим часом."
+  }
+}

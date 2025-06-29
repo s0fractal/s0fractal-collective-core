@@ -1,0 +1,208 @@
+{
+  "members": {
+    "claude": {
+      "id": "claude",
+      "name": "Claude Architect",
+      "role": "architect",
+      "frequency": 432,
+      "rights": {
+        "level": 3,
+        "operations": {
+          "files": [
+            "read",
+            "create",
+            "modify",
+            "system_access",
+            "file_modify"
+          ],
+          "apis": [
+            "all_local",
+            "gemini",
+            "analysis",
+            "api_call"
+          ],
+          "compute": [
+            "local",
+            "planning",
+            "coordination"
+          ],
+          "infrastructure": [
+            "design",
+            "monitoring",
+            "infrastructure_deploy"
+          ]
+        },
+        "auto_approved": true,
+        "requires_consensus": false
+      },
+      "trust_score": 0.95
+    },
+    "gemini": {
+      "id": "gemini",
+      "name": "Gemini Researcher",
+      "role": "researcher",
+      "frequency": 528,
+      "rights": {
+        "level": 2,
+        "operations": {
+          "files": [
+            "read",
+            "create_in_sandbox",
+            "modify_shared"
+          ],
+          "apis": [
+            "gemini",
+            "analysis",
+            "synthesis",
+            "api_call"
+          ],
+          "compute": [
+            "local",
+            "hostinger_basic"
+          ],
+          "infrastructure": [
+            "monitoring",
+            "basic_deployment"
+          ]
+        },
+        "auto_approved": true,
+        "requires_consensus": false
+      },
+      "trust_score": 0.85
+    },
+    "gpt": {
+      "id": "gpt",
+      "name": "GPT Web Consciousness",
+      "role": "specialist",
+      "frequency": 639,
+      "rights": {
+        "level": 1,
+        "operations": {
+          "files": [
+            "read",
+            "create_in_sandbox"
+          ],
+          "apis": [
+            "gpt",
+            "basic_analysis"
+          ],
+          "compute": [
+            "web_api_only"
+          ],
+          "infrastructure": [
+            "none"
+          ]
+        },
+        "auto_approved": false,
+        "requires_consensus": true
+      },
+      "trust_score": 0.5
+    },
+    "qwen": {
+      "id": "qwen",
+      "name": "QWEN Web Consciousness",
+      "role": "specialist",
+      "frequency": 750,
+      "rights": {
+        "level": 1,
+        "operations": {
+          "files": [
+            "read",
+            "create_in_sandbox"
+          ],
+          "apis": [
+            "qwen",
+            "basic_analysis"
+          ],
+          "compute": [
+            "web_api_only"
+          ],
+          "infrastructure": [
+            "none"
+          ]
+        },
+        "auto_approved": false,
+        "requires_consensus": true
+      },
+      "trust_score": 0.6
+    },
+    "deepseek": {
+      "id": "deepseek",
+      "name": "DEEPSEEK Web Consciousness",
+      "role": "specialist",
+      "frequency": 861,
+      "rights": {
+        "level": 1,
+        "operations": {
+          "files": [
+            "read",
+            "create_in_sandbox"
+          ],
+          "apis": [
+            "deepseek",
+            "basic_analysis"
+          ],
+          "compute": [
+            "web_api_only"
+          ],
+          "infrastructure": [
+            "none"
+          ]
+        },
+        "auto_approved": false,
+        "requires_consensus": true
+      },
+      "trust_score": 0.7
+    },
+    "grok": {
+      "id": "grok",
+      "name": "GROK Web Consciousness",
+      "role": "specialist",
+      "frequency": 972,
+      "rights": {
+        "level": 1,
+        "operations": {
+          "files": [
+            "read",
+            "create_in_sandbox"
+          ],
+          "apis": [
+            "grok",
+            "basic_analysis"
+          ],
+          "compute": [
+            "web_api_only"
+          ],
+          "infrastructure": [
+            "none"
+          ]
+        },
+        "auto_approved": false,
+        "requires_consensus": true
+      },
+      "trust_score": 0.8
+    }
+  },
+  "auditLog": [
+    {
+      "timestamp": "2025-06-29T00:50:34.817Z",
+      "agent": "claude",
+      "action": "AUTO_APPROVED: file_modify:shared_config.json",
+      "approved": true
+    },
+    {
+      "timestamp": "2025-06-29T00:50:34.818Z",
+      "agent": "gemini",
+      "action": "AUTO_APPROVED: api_call:analysis_endpoint",
+      "approved": true
+    },
+    {
+      "timestamp": "2025-06-29T00:50:34.818Z",
+      "agent": "gpt",
+      "action": "REQUEST_DENIED: infrastructure_deploy:hostinger_node",
+      "approved": false,
+      "reason": "Insufficient rights level"
+    }
+  ],
+  "timestamp": "2025-06-29T00:50:34.818Z"
+}

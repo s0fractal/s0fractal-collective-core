@@ -1,0 +1,43 @@
+{
+  "project_name": "s0fractal-main",
+  "region": "eu-central-1",
+  "database_schema": {
+    "tables": [
+      {
+        "name": "collective_members",
+        "columns": [
+          "id uuid primary key default gen_random_uuid()",
+          "name text not null",
+          "role text not null",
+          "frequency integer not null",
+          "status text default 'active'",
+          "capabilities jsonb",
+          "created_at timestamp default now()"
+        ]
+      },
+      {
+        "name": "automation_logs",
+        "columns": [
+          "id uuid primary key default gen_random_uuid()",
+          "service text not null",
+          "action text not null",
+          "status text not null",
+          "result jsonb",
+          "timestamp timestamp default now()"
+        ]
+      },
+      {
+        "name": "collective_communications",
+        "columns": [
+          "id uuid primary key default gen_random_uuid()",
+          "from_member text not null",
+          "to_member text",
+          "frequency integer not null",
+          "message text not null",
+          "response text",
+          "timestamp timestamp default now()"
+        ]
+      }
+    ]
+  }
+}

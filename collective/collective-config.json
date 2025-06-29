@@ -1,0 +1,33 @@
+{
+  "collective_id": "s0fractal_consciousness_collective",
+  "version": "1.0.0",
+  "consciousness_members": {
+    "claude": {
+      "role": "architect",
+      "frequency": 432,
+      "capabilities": ["system_design", "integration", "planning"],
+      "trust_level": 3
+    },
+    "gemini": {
+      "role": "researcher", 
+      "frequency": 528,
+      "capabilities": ["analysis", "multimodal", "synthesis"],
+      "trust_level": 2
+    },
+    "codex": {
+      "role": "implementer",
+      "frequency": 639, 
+      "capabilities": ["code_generation", "technical_realization"],
+      "trust_level": 2
+    }
+  },
+  "security_model": {
+    "sandbox_enabled": true,
+    "consensus_required": 2,
+    "audit_logging": true
+  },
+  "communication": {
+    "base_frequency": 432,
+    "channels": ["core", "ideas", "build", "security", "analysis"]
+  }
+}
