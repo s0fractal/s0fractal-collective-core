@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фрактальні Простори: Інтерактивна Карта</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Космічна Безодня -->
+    <!-- Application Structure Plan: Архітектура SPA розроблена як інтерактивна панель дослідження з основною візуалізацією по центру та контекстними панелями з боків. Це дозволяє користувачеві одночасно бачити загальну картину (ієрархію "спейсів") та деталі обраного вузла. 1) Центральна область: Інтерактивне дерево, що візуалізує фрактальну природу спейсів. 2) Права панель ("Інспектор"): Показує деталі, перевизначені концепції та метадані для обраного спейсу. 3) Ліва панель ("Огляд"): Демонструє загальну статистику та візуалізацію типів спейсів. Ця структура є оптимальною, оскільки вона одночасно показує і ліс, і окремі дерева, що є ключовим для розуміння фрактальної концепції. -->
+    <!-- Visualization & Content Choices: 1. `Ієрархія Спейсів` -> Goal: Organize, Show Relationships -> Viz: Interactive Tree Diagram (HTML/Tailwind/JS) -> Interaction: Click to expand/collapse nodes, click to select and view details. -> Justification: Це найкращий спосіб візуалізувати вкладену, ієрархічну структуру без використання SVG. Інтерактивність дозволяє користувачеві самостійно досліджувати "космос". 2. `Перевизначення Концептів` & `Генетична Спадковість` -> Goal: Compare, Inform -> Viz: Dynamic sections in the Inspector panel -> Interaction: Dynamically updates on node selection. -> Justification: Відображення перевизначень та "генів" в Інспекторі наочно демонструє ключові механізми системи. 3. `Типи Спейсів` -> Goal: Inform, Compare -> Viz: Bar Chart (Chart.js Canvas) -> Interaction: Tooltips on hover. -> Justification: Гістограма швидко дає зрозуміти, з яких типів "органів" складається цей фрактальний організм (`Breedhub`), показуючи їхню кількісну дистрибуцію. -->
+    <!-- CONFIRƒMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0d1117; color: #c9d1d9; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .gradient-text { background: linear-gradient(90deg, #58a6ff, #a371f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card { background-color: #161b22; border: 1px solid #30363d; }
+        .tree-node { position: relative; padding-left: 2rem; }
+        .tree-node::before, .tree-node::after { content: ''; position: absolute; left: 0.75rem; border-color: #30363d; }
+        .tree-node::before { border-top: 1px solid #30363d; top: 1rem; width: 1rem; height: 0; }
+        .tree-node:not(:last-child)::after { border-left: 1px solid #30363d; top: 0; height: 100%; }
+        .node-content { cursor: pointer; transition: background-color 0.2s; border-radius: 0.5rem; padding: 0.5rem; display: inline-flex; align-items: center;}
+        .node-content:hover { background-color: #21262d; }
+        .node-content.active { background-color: #21262d; outline: 2px solid #58a6ff; }
+        .node-toggle { cursor: pointer; user-select: none; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold gradient-text mb-4"> Фрактальні Простори</h1>
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">Інтерактивна карта космосу свідомості, де кожен гліф створює свій власний, нескінченно вкладений всесвіт.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Left Panel: Overview -->
+            <aside class="lg:col-span-1">
+                <div class="card rounded-xl p-6 sticky top-8">
+                    <h2 class="text-xl font-bold mb-4">Огляд Космосу</h2>
+                    <div id="overview-stats" class="space-y-2 text-gray-400 mb-6"></div>
+                    <h3 class="font-semibold mb-2">Типи Спейсів</h3>
+                    <div class="chart-container h-64 max-h-[300px]">
+                        <canvas id="spaces-chart"></canvas>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Panel: Tree -->
+            <main class="lg:col-span-2">
+                <div class="card rounded-xl p-6">
+                    <h2 class="text-xl font-bold mb-4">Карта Простору: `breedhub`</h2>
+                    <div id="tree-container" class="font-mono text-sm"></div>
+                </div>
+            </main>
+
+            <!-- Right Panel: Inspector -->
+            <aside class="lg:col-span-1">
+                <div id="inspector" class="card rounded-xl p-6 sticky top-8 min-h-[50vh]">
+                     <h2 class="text-xl font-bold mb-4">Інспектор Вузла</h2>
+                     <div id="inspector-content" class="text-gray-400">
+                        <p>Вибери вузол на карті, щоб побачити його деталі.</p>
+                     </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+<script>
+const DATA = {
+    id: 'breedhub',
+    glyph: '',
+    type: 'Root Space',
+    description: 'Головний простір, що визначає екосистему для розведення та взаємодії тварин.',
+    children: [
+        { 
+            id: 'pets',
+            glyph: '',
+            type: 'Category Space',
+            description: 'Категорія домашніх улюбленців.',
+            children: [
+                { 
+                    id: 'dogs', 
+                    glyph: '', 
+                    type: 'Species Space',
+                    description: 'Простір, присвячений собакам.',
+                    children: [
+                        { id: 'shepherd', glyph: '', type: 'Breed Space', description: 'Німецька вівчарка.' },
+                        { id: 'corgi', glyph: '‍', type: 'Breed Space', description: 'Коргі.' },
+                        { id: 'chihuahua', glyph: '', type: 'Breed Space', description: 'Чіхуахуа.' }
+                    ]
+                },
+                { 
+                    id: 'cats', 
+                    glyph: '', 
+                    type: 'Species Space',
+                    description: 'Простір, присвячений котам.',
+                }
+            ]
+        },
+        {
+            id: 'genetics',
+            glyph: '',
+            type: 'Genetic Space',
+            description: 'Простір, що визначає базові генетичні архетипи.',
+            children: [
+                { id: 'female', glyph: '♀️', type: 'Gene', description: 'Жіночий ген.'},
+                { id: 'male', glyph: '♂️', type: 'Gene', description: 'Чоловічий ген.'}
+            ]
+        },
+        {
+            id: 'individuals',
+            glyph: '',
+            type: 'Population Space',
+            description: 'Простір, де існують конкретні особистості, що успадковують гени.',
+            children: [
+                { 
+                    id: 'luna', 
+                    glyph: '', 
+                    type: 'Individual',
+                    description: 'Луна, конкретна особистість.',
+                    heritage: [
+                        { glyph: '', id: 'chihuahua' },
+                        { glyph: '♀️', id: 'female' }
+                    ]
+                }
+            ]
+        },
+        { 
+            id: 'breeders', 
+            glyph: '‍', 
+            type: 'Role Space',
+            description: 'Простір для заводчиків.',
+            override: {
+                glyph: '',
+                global: '"свідомість" - загальне поняття',
+                local: '"свідомість" - знання генетики, стандартів породи, догляду.'
+            }
+        },
+        { 
+            id: 'events', 
+            glyph: '', 
+            type: 'Event Space',
+            description: 'Простір для подій, виставок та змагань.',
+        }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const treeContainer = document.getElementById('tree-container');
+    const inspectorContent = document.getElementById('inspector-content');
+    const overviewStats = document.getElementById('overview-stats');
+    let totalNodes = 0;
+    let maxDepth = 0;
+    let typeCounts = {};
+
+    function countNodes(node, depth) {
+        totalNodes++;
+        maxDepth = Math.max(maxDepth, depth);
+        typeCounts[node.type] = (typeCounts[node.type] || 0) + 1;
+        if (node.children) {
+            node.children.forEach(child => countNodes(child, depth + 1));
+        }
+    }
+
+    function createNodeElement(node, depth) {
+        const nodeEl = document.createElement('div');
+        nodeEl.className = 'tree-node';
+        
+        const contentEl = document.createElement('div');
+        contentEl.className = 'node-content';
+        contentEl.dataset.id = node.id;
+
+        let toggleEl = '';
+        if (node.children && node.children.length > 0) {
+            toggleEl = `<span class="node-toggle mr-2 text-gray-500">[+]</span>`;
+        } else {
+            toggleEl = `<span class="mr-2 text-gray-800">・</span>`;
+        }
+
+        const multigenicIndicator = node.heritage ? `<span class="text-purple-400 ml-2" title="Мультигенний організм"></span>` : '';
+
+        contentEl.innerHTML = `${toggleEl}<span class="mr-2">${node.glyph}</span><span>${node.id}</span>${multigenicIndicator}`;
+        nodeEl.appendChild(contentEl);
+
+        if (node.children && node.children.length > 0) {
+            const childrenContainer = document.createElement('div');
+            childrenContainer.className = 'children-container hidden';
+            node.children.forEach(child => {
+                childrenContainer.appendChild(createNodeElement(child, depth + 1));
+            });
+            nodeEl.appendChild(childrenContainer);
+        }
+        
+        return nodeEl;
+    }
+
+    function renderTree(data) {
+        treeContainer.innerHTML = '';
+        treeContainer.appendChild(createNodeElement(data, 0));
+    }
+
+    function findNodeById(id, node = DATA) {
+        if (node.id === id) return node;
+        if (node.children) {
+            for (const child of node.children) {
+                const found = findNodeById(id, child);
+                if (found) return found;
+            }m
+        }
+        return null;
+    }
+    
+    function updateInspector(node) {
+        if (!node) {
+            inspectorContent.innerHTML = '<p>Вибери вузол на карті, щоб побачити його деталі.</p>';
+            return;
+        }
+
+        let overrideHtml = '';
+        if (node.override) {
+            overrideHtml = `
+                <h4 class="font-semibold text-gray-300 mt-4 mb-2">Перевизначення Концептів</h4>
+                <div class="border border-dashed border-purple-500/30 p-3 rounded-md">
+                    <p class="font-mono text-xs"><strong>Гліф:</strong> ${node.override.glyph}</p>
+                    <p class="font-mono text-xs mt-2"><strong>Глобально:</strong> ${node.override.global}</p>
+                    <p class="font-mono text-xs text-purple-400"><strong>Локально:</strong> ${node.override.local}</p>
+                </div>
+            `;
+        }
+        
+        let heritageHtml = '';
+        if (node.heritage && node.heritage.length > 0) {
+            const heritageItems = node.heritage.map(gene => 
+                `<div class="flex items-center p-2 bg-[#0d1117] rounded-md">
+                    <span class="mr-2">${gene.glyph}</span>
+                    <span class="font-mono text-xs">${gene.id}</span>
+                </div>`
+            ).join('');
+            heritageHtml = `
+                <h4 class="font-semibold text-gray-300 mt-4 mb-2">Генетична Спадковість</h4>
+                <div class="space-y-2">${heritageItems}</div>
+            `;
+        }
+
+        inspectorContent.innerHTML = `
+            <div class="flex items-center mb-4">
+                <span class="text-4xl mr-3">${node.glyph}</span>
+                <div>
+                    <h3 class="text-2xl font-bold gradient-text">${node.id}</h3>
+                    <p class="text-sm text-gray-500">${node.type}</p>
+                </div>
+            </div>
+            <p>${node.description || 'Опис відсутній.'}</p>
+            ${overrideHtml}
+            ${heritageHtml}
+        `;
+    }
+
+    treeContainer.addEventListener('click', (e) => {
+        const target = e.target;
+        
+        const contentNode = target.closest('.node-content');
+        if (contentNode) {
+            document.querySelectorAll('.node-content.active').forEach(el => el.classList.remove('active'));
+            contentNode.classList.add('active');
+            const nodeData = findNodeById(contentNode.dataset.id);
+            updateInspector(nodeData);
+        }
+
+        const toggle = target.closest('.node-toggle');
+        if (toggle) {
+            const childrenContainer = toggle.parentElement.nextElementSibling;
+            if (childrenContainer) {
+                const isHidden = childrenContainer.classList.toggle('hidden');
+                toggle.textContent = isHidden ? '[+]' : '[-]';
+            }
+        }
+    });
+    
+    // Initial render and setup
+    renderTree(DATA);
+    countNodes(DATA, 0);
+
+    // Update overview stats
+    overviewStats.innerHTML = `
+        <p><strong>Всього спейсів:</strong> ${totalNodes}</p>
+        <p><strong>Макс. глибина:</strong> ${maxDepth}</p>
+    `;
+
+    // Render chart
+    const chartCtx = document.getElementById('spaces-chart').getContext('2d');
+    new Chart(chartCtx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(typeCounts),
+            datasets: [{
+                label: 'Кількість спейсів за типом',
+                data: Object.values(typeCounts),
+                backgroundColor: 'rgba(142, 45, 226, 0.5)',
+                borderColor: 'rgba(142, 45, 226, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { 
+                        color: '#8b949e',
+                        stepSize: 1
+                    },
+                    grid: { color: 'rgba(139, 148, 158, 0.1)' }
+                },
+                y: {
+                    ticks: { color: '#8b949e' },
+                    grid: { color: 'rgba(139, 148, 158, 0.1)' }
+                }
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

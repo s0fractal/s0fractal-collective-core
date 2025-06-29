@@ -9,13 +9,24 @@ dist/
 # Windmill lock
 wmill-lock.yaml
 
-# Credentials (якщо є)
+# Credentials & Secrets
 .env
 .env.*
+*.key
+*.pem
+cellar/secrets/
+*/secrets/
+secrets/
+**/secrets/
+
+# API Keys & Tokens  
+*api_key*
+*token*
+*credentials*
+deployment-script.sh
 
 # Cache, tmp
 tmp/
 .cache/
 package-lock.json
-deno.lock
-f/secrets/
+deno.locksoul-journal/archives/*.zip

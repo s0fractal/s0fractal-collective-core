@@ -1,0 +1,38 @@
+id: agent-shadow
+name: Тіньовий Агент
+description: Відстежує петлі поведінки й неусвідомлені дії, пропонує рефлексії або делегування
+
+triggers:
+  - schedule: "0 * * * *"
+  - event: resonance-event-created
+  - command: shadow.listen
+
+inputs:
+  user_id: string
+  file_open_log_path: string
+  resonance_events_path: string
+  output_md: string
+
+steps:
+  - id: load_logs
+    run: load_logs
+    args:
+      files:
+        - "{{file_open_log_path}}"
+        - "{{resonance_events_path}}"
+
+  - id: detect_loops
+    run: analyze_behavior_loops
+    args:
+      logs: "{{steps.load_logs.outputs}}"
+
+  - id: generate_report
+    run: render_shadow_report
+    args:
+      behavior_patterns: "{{steps.detect_loops.outputs}}"
+      output_path: "{{output_md}}"
+
+  - id: suggest_action
+    run: prompt_user
+    args:
+      report_path: "{{steps.generate_report.outputs}}"

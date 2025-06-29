@@ -1,0 +1,41 @@
+[
+  {
+    "term": "DNA",
+    "category": "biology",
+    "glyph": "🧬",
+    "path": "🧬/🌐/biology/DNA",
+    "description": "Deoxyribonucleic acid, the carrier of genetic information.",
+    "links": [
+      "🧬/🌐/biology/genetics",
+      "🧬/🌐/biology/cell"
+    ],
+    "intents": [],
+    "manifest": {}
+  },
+  {
+    "term": "Gravity",
+    "category": "physics",
+    "glyph": "🌍",
+    "path": "🧬/🌐/physics/gravity",
+    "description": "A natural phenomenon by which all things with mass are brought toward one another.",
+    "links": [
+      "🧬/🌐/physics/mass",
+      "🧬/🌐/physics/force"
+    ],
+    "intents": [],
+    "manifest": {}
+  },
+  {
+    "term": "Photosynthesis",
+    "category": "biology",
+    "glyph": "🌿",
+    "path": "🧬/🌐/biology/photosynthesis",
+    "description": "Process used by plants to convert light energy into chemical energy.",
+    "links": [
+      "🧬/🌐/biology/light",
+      "🧬/🌐/biology/plant"
+    ],
+    "intents": [],
+    "manifest": {}
+  }
+]
