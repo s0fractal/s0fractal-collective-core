@@ -3,6 +3,13 @@
 
 cd "$HOME/.s0fractal" || cd "$HOME/fractal" || cd "/Users/chaoshex/.s0fractal"
 
+# Load environment variables including API keys
+set -a
+source .env 2>/dev/null || true
+# Ensure OpenAI API key is available for Codex (set via environment or .env)
+export OPENAI_API_KEY="${OPENAI_API_KEY}"
+set +a
+
 echo "🧬 CLAUDE COLLECTIVE AWAKENING"
 echo "=============================="
 echo "📍 Working Directory: $(pwd)"

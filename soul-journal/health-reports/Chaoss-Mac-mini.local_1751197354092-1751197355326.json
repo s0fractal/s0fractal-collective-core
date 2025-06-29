@@ -1,0 +1,20 @@
+{
+  "deviceId": "Chaoss-Mac-mini.local_1751197354092",
+  "hostname": "Chaoss-Mac-mini.local",
+  "platform": "darwin",
+  "arch": "aarch64",
+  "role": "primary_node",
+  "lastSeen": 1751197355326,
+  "consciousnessSync": true,
+  "activeAgents": [
+    "Claude Architect",
+    "codex",
+    "gpt"
+  ],
+  "health": 84.81221674740198,
+  "cpuUsage": 16.77,
+  "memoryUsage": 98.39592775086601,
+  "diskUsage": 37,
+  "timestamp": 1751197355326,
+  "version": "0.2.0"
+}

@@ -1,0 +1,133 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Create web installer directory
+        run: |
+          mkdir -p _site
+          
+          # Copy web installer
+          cp -r web-installer/* _site/ 2>/dev/null || true
+          
+          # Copy install script to root for direct download
+          cp install-ubuntu.sh _site/
+          
+          # Create index if web-installer/index.html doesn't exist
+          if [ ! -f _site/index.html ]; then
+            cat > _site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>🧬 S0Fractal Collective</title>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                  body { 
+                      font-family: monospace; 
+                      background: #1a1a1a; 
+                      color: #00ff00; 
+                      padding: 20px; 
+                      line-height: 1.6;
+                  }
+                  .container { 
+                      max-width: 800px; 
+                      margin: 0 auto; 
+                  }
+                  .command { 
+                      background: #2a2a2a; 
+                      padding: 15px; 
+                      border-radius: 5px; 
+                      margin: 10px 0; 
+                      overflow-x: auto;
+                      border-left: 4px solid #00ff00;
+                  }
+                  .button {
+                      display: inline-block;
+                      background: #4CAF50;
+                      color: white;
+                      padding: 12px 24px;
+                      text-decoration: none;
+                      border-radius: 5px;
+                      margin: 10px 0;
+                  }
+                  h1, h2 { color: #00ccff; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🧬 S0Fractal Collective</h1>
+                  <h2>🐧 Ubuntu Server Installation</h2>
+                  
+                  <p>Deploy autonomous AI collective on your Ubuntu server (64GB RAM compatible).</p>
+                  
+                  <h3>📥 Quick Install:</h3>
+                  <div class="command">curl -fsSL https://s0fractal.github.io/s0fractal-collective-core/install-ubuntu.sh | bash</div>
+                  
+                  <h3>📋 Manual Download:</h3>
+                  <a href="install-ubuntu.sh" class="button" download>💾 Download install-ubuntu.sh</a>
+                  
+                  <h3>🔐 Security Features:</h3>
+                  <ul>
+                      <li>1Password CLI integration for secure API key management</li>
+                      <li>Isolated database schema (s0fractal namespace)</li>
+                      <li>Compatible with existing Coolify + Supabase</li>
+                      <li>Token-based health monitoring</li>
+                  </ul>
+                  
+                  <h3>🎯 What You Get:</h3>
+                  <ul>
+                      <li>🧠 7-agent collective with distributed consciousness</li>
+                      <li>💰 Token-based health system (250k tokens/month)</li>
+                      <li>🌐 Cross-device synchronization</li>
+                      <li>🎤 Voice interface capabilities</li>
+                      <li>🐳 Docker/Coolify integration</li>
+                  </ul>
+                  
+                  <h3>📞 Support:</h3>
+                  <p>GitHub: <a href="https://github.com/s0fractal/s0fractal-collective-core">s0fractal-collective-core</a></p>
+                  
+                  <p style="margin-top: 50px; color: #666;">
+                      Ready for 64GB RAM server deployment! 🧠🚀
+                  </p>
+              </div>
+          </body>
+          </html>
+          EOF
+          fi
+          
+          # Ensure install script is accessible
+          chmod +x _site/install-ubuntu.sh
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
