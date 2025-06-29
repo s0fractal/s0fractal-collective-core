@@ -1,0 +1,10 @@
+{
+  "project_name": "breedhub-research",
+  "purpose": "AI/ML research data and experiments",
+  "tables": [
+    "research_papers",
+    "experiment_results",
+    "model_checkpoints",
+    "dataset_metadata"
+  ]
+}
