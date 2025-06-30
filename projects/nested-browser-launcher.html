@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 Nested Browser-in-Browser Launcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-areas: 
+                "sidebar main-browser"
+                "sidebar nested-browsers";
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: 60vh 40vh;
+            height: 100vh;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        .main-browser {
+            grid-area: main-browser;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nested-browsers {
+            grid-area: nested-browsers;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .browser-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .nested-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            height: 100%;
+        }
+
+        .nested-browser {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .browser-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .control-btn.close { background: #ff5f56; }
+        .control-btn.minimize { background: #ffbd2e; }
+        .control-btn.maximize { background: #27ca3f; }
+
+        .browser-title {
+            font-size: 0.8rem;
+            color: #888;
+            flex: 1;
+            truncate: ellipsis;
+        }
+
+        .browser-body {
+            height: calc(100% - 40px);
+        }
+
+        .browser-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .level-indicator {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #00ff88;
+        }
+
+        .level-number {
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .level-content {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .add-level-btn {
+            background: linear-gradient(45deg, #00ff88, #0099ff);
+            color: #0a0a0a;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .add-level-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .cloud-status {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cloud-provider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+        }
+
+        .status-dot.connected {
+            background: #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .main-browser-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .url-bar {
+            flex: 1;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #e0e0e0;
+            font-size: 0.8rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-browser-body {
+            height: calc(100% - 60px);
+            margin-top: 60px;
+        }
+
+        .floating-glyphs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glyph {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.05;
+            animation: float 30s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .modal-title {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+            font-size: 0.8rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 0.8rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .modal-btn.primary {
+            background: #00ff88;
+            color: #0a0a0a;
+        }
+
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-glyphs" id="floatingGlyphs"></div>
+    
+    <div class="workspace">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">🌐 Browser Levels</div>
+                <div id="levelsList">
+                    <div class="level-indicator">
+                        <div class="level-number">Level 0</div>
+                        <div class="level-content">Host Browser (Main)</div>
+                    </div>
+                </div>
+                <button class="add-level-btn" onclick="showAddLevelModal()">+ Add Nested Level</button>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚡ Quick Actions</div>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="addCollectiveDashboard()">🤖 S0Fractal Collective</button>
+                    <button class="quick-btn" onclick="addVSCode()">💻 VSCode Web</button>
+                    <button class="quick-btn" onclick="addJupyter()">📊 Jupyter Notebook</button>
+                    <button class="quick-btn" onclick="addGitHub()">🐙 GitHub1s</button>
+                    <button class="quick-btn" onclick="addStackBlitz()">⚡ StackBlitz</button>
+                    <button class="quick-btn" onclick="addCodePen()">🖊️ CodePen</button>
+                    <button class="quick-btn" onclick="addFigma()">🎨 Figma</button>
+                    <button class="quick-btn" onclick="addExcalidraw()">✏️ Excalidraw</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">☁️ Cloud Storage</div>
+                <div class="cloud-status">
+                    <div class="cloud-provider">
+                        <div class="status-dot" id="gdrive-status"></div>
+                        <span>Google Drive</span>
+                    </div>
+                    <div class="cloud-provider">
+                        <div class="status-dot" id="dropbox-status"></div>
+                        <span>Dropbox</span>
+                    </div>
+                    <div class="cloud-provider">
+                        <div class="status-dot" id="onedrive-status"></div>
+                        <span>OneDrive</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">📊 Stats</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">
+                    <div>Nested Levels: <span id="nestedCount">0</span></div>
+                    <div>Active Frames: <span id="frameCount">1</span></div>
+                    <div>Cloud Files: <span id="cloudFileCount">0</span></div>
+                    <div>Memory Usage: <span id="memoryUsage">~50MB</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-browser">
+            <div class="main-browser-header">
+                <div class="browser-controls">
+                    <button class="control-btn close"></button>
+                    <button class="control-btn minimize"></button>
+                    <button class="control-btn maximize"></button>
+                </div>
+                <button class="nav-btn" onclick="navigateBack()">←</button>
+                <button class="nav-btn" onclick="navigateForward()">→</button>
+                <button class="nav-btn" onclick="refreshMainBrowser()">⟳</button>
+                <input type="text" class="url-bar" id="mainUrlBar" 
+                       value="https://s0fractal-autonomous-launcher.html" 
+                       onkeypress="handleUrlBarEnter(event)">
+                <button class="nav-btn" onclick="navigateToUrl()">Go</button>
+            </div>
+            <div class="main-browser-body">
+                <iframe class="browser-frame" id="mainBrowser" 
+                        src="s0fractal-autonomous-launcher.html"></iframe>
+            </div>
+        </div>
+
+        <div class="nested-browsers">
+            <div class="nested-grid" id="nestedGrid">
+                <!-- Nested browsers will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Level Modal -->
+    <div class="modal" id="addLevelModal">
+        <div class="modal-content">
+            <div class="modal-title">🌐 Add Nested Browser Level</div>
+            <div class="input-group">
+                <label>URL:</label>
+                <input type="url" id="newLevelUrl" placeholder="https://example.com">
+            </div>
+            <div class="input-group">
+                <label>Title:</label>
+                <input type="text" id="newLevelTitle" placeholder="Browser Title">
+            </div>
+            <div class="input-group">
+                <label>Parent Level:</label>
+                <select id="newLevelParent">
+                    <option value="0">Level 0 (Main)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Size:</label>
+                <select id="newLevelSize">
+                    <option value="small">Small (300x200)</option>
+                    <option value="medium" selected>Medium (400x300)</option>
+                    <option value="large">Large (600x400)</option>
+                    <option value="full">Full Width</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="addNestedLevel()">Add Level</button>
+                <button class="modal-btn secondary" onclick="closeAddLevelModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="proxy-iframe-solution.js"></script>
+    <script type="module">
+        // Nested Browser Management System
+        class NestedBrowserSystem {
+            constructor() {
+                this.levels = new Map();
+                this.currentLevel = 0;
+                this.maxLevel = 0;
+                this.sharedContext = this.createSharedContext();
+                this.cloudFS = null;
+                
+                this.initializeSystem();
+            }
+
+            createSharedContext() {
+                return {
+                    globalState: {
+                        levels: this.levels,
+                        tokenBudget: null,
+                        cloudFiles: new Map(),
+                        sharedMemory: new Map()
+                    },
+                    functions: {
+                        createNestedBrowser: this.createNestedBrowser.bind(this),
+                        communicateUp: this.communicateUp.bind(this),
+                        communicateDown: this.communicateDown.bind(this),
+                        accessCloudFile: this.accessCloudFile.bind(this),
+                        syncData: this.syncData.bind(this)
+                    },
+                    events: new EventTarget()
+                };
+            }
+
+            async initializeSystem() {
+                console.log("🌐 Initializing Nested Browser System...");
+                
+                // Initialize floating glyphs
+                this.startFloatingGlyphs();
+                
+                // Initialize cloud storage connections
+                await this.initializeCloudStorage();
+                
+                // Set up global event listeners
+                this.setupGlobalEventListeners();
+                
+                console.log("✅ Nested Browser System ready");
+            }
+
+            async initializeCloudStorage() {
+                console.log("☁️ Initializing cloud storage connections...");
+                
+                // Simulate cloud storage initialization
+                const providers = ['gdrive', 'dropbox', 'onedrive'];
+                
+                for (const provider of providers) {
+                    setTimeout(() => {
+                        const statusElement = document.getElementById(`${provider}-status`);
+                        if (statusElement) {
+                            statusElement.classList.add('connected');
+                        }
+                        console.log(`✅ ${provider} connected`);
+                    }, Math.random() * 3000 + 1000);
+                }
+            }
+
+            setupGlobalEventListeners() {
+                // Message passing between frames
+                window.addEventListener('message', (event) => {
+                    this.handleFrameMessage(event);
+                });
+
+                // Update stats periodically
+                setInterval(() => {
+                    this.updateStats();
+                }, 5000);
+            }
+
+            handleFrameMessage(event) {
+                const { type, level, data } = event.data;
+                
+                switch (type) {
+                    case 'NESTED_BROWSER_REQUEST':
+                        this.handleNestedBrowserRequest(level, data);
+                        break;
+                    case 'SHARED_CONTEXT_REQUEST':
+                        this.handleSharedContextRequest(event.source, data);
+                        break;
+                    case 'CLOUD_FILE_OPERATION':
+                        this.handleCloudFileOperation(data);
+                        break;
+                }
+            }
+
+            async createNestedBrowser(config) {
+                const level = this.maxLevel + 1;
+                this.maxLevel = level;
+
+                console.log(`🌐 Створення nested browser Level ${level} для: ${config.url}`);
+
+                // Використовуємо proxy систему для обходу CSP
+                let finalIframe;
+                try {
+                    if (window.ProxyIFrameSystem) {
+                        const proxySystem = new window.ProxyIFrameSystem();
+                        const result = await proxySystem.createEmbeddableIframe(config.url, config);
+                        finalIframe = result.iframe;
+                        console.log(`✅ Використано метод: ${result.method}`);
+                        
+                        if (result.description) {
+                            console.log(`📝 ${result.description}`);
+                        }
+                    } else {
+                        // Fallback до стандартного iframe
+                        finalIframe = this.createStandardIframe(config.url);
+                    }
+                } catch (error) {
+                    console.log(`⚠️ Proxy system failed, using fallback: ${error.message}`);
+                    finalIframe = this.createFallbackIframe(config.url);
+                }
+
+                const browserElement = this.createBrowserElement(level, config);
+                
+                // Замінюємо стандартний iframe на проксований
+                const existingIframe = browserElement.querySelector('iframe');
+                if (existingIframe && finalIframe) {
+                    existingIframe.parentNode.replaceChild(finalIframe, existingIframe);
+                }
+                
+                this.addToNestedGrid(browserElement);
+                
+                const levelData = {
+                    level,
+                    element: browserElement,
+                    iframe: finalIframe || browserElement.querySelector('iframe'),
+                    config,
+                    parentLevel: config.parentLevel || 0
+                };
+
+                this.levels.set(level, levelData);
+                this.updateLevelsList();
+                this.updateStats();
+
+                // Inject shared context into the new iframe
+                setTimeout(() => {
+                    this.injectSharedContext(levelData.iframe);
+                }, 1000);
+
+                return levelData;
+            }
+
+            createBrowserElement(level, config) {
+                const browserDiv = document.createElement('div');
+                browserDiv.className = 'nested-browser';
+                browserDiv.dataset.level = level;
+
+                const sizeClass = config.size || 'medium';
+                browserDiv.classList.add(`size-${sizeClass}`);
+
+                browserDiv.innerHTML = `
+                    <div class="browser-header">
+                        <div class="browser-controls">
+                            <button class="control-btn close" onclick="nestedBrowserSystem.closeNestedBrowser(${level})"></button>
+                            <button class="control-btn minimize"></button>
+                            <button class="control-btn maximize" onclick="nestedBrowserSystem.maximizeNestedBrowser(${level})"></button>
+                        </div>
+                        <div class="browser-title">Level ${level}: ${config.title || config.url}</div>
+                    </div>
+                    <div class="browser-body">
+                        <iframe src="${config.url}" 
+                                sandbox="allow-same-origin allow-scripts allow-forms allow-downloads allow-modals allow-popups"></iframe>
+                    </div>
+                `;
+
+                return browserDiv;
+            }
+
+            addToNestedGrid(browserElement) {
+                const nestedGrid = document.getElementById('nestedGrid');
+                nestedGrid.appendChild(browserElement);
+            }
+
+            injectSharedContext(iframe) {
+                try {
+                    iframe.contentWindow.postMessage({
+                        type: 'INJECT_SHARED_CONTEXT',
+                        sharedContext: this.sharedContext
+                    }, '*');
+                } catch (error) {
+                    console.log("⚠️ Cannot inject context into cross-origin iframe");
+                }
+            }
+
+            updateLevelsList() {
+                const levelsList = document.getElementById('levelsList');
+                levelsList.innerHTML = '';
+
+                // Add Level 0
+                levelsList.innerHTML += `
+                    <div class="level-indicator">
+                        <div class="level-number">Level 0</div>
+                        <div class="level-content">Host Browser (Main)</div>
+                    </div>
+                `;
+
+                // Add nested levels
+                for (const [level, data] of this.levels) {
+                    levelsList.innerHTML += `
+                        <div class="level-indicator">
+                            <div class="level-number">Level ${level}</div>
+                            <div class="level-content">${data.config.title || data.config.url}</div>
+                        </div>
+                    `;
+                }
+
+                // Update parent selector in modal
+                const parentSelect = document.getElementById('newLevelParent');
+                parentSelect.innerHTML = '<option value="0">Level 0 (Main)</option>';
+                
+                for (const [level, data] of this.levels) {
+                    parentSelect.innerHTML += `<option value="${level}">Level ${level}</option>`;
+                }
+            }
+
+            updateStats() {
+                document.getElementById('nestedCount').textContent = this.levels.size;
+                document.getElementById('frameCount').textContent = this.levels.size + 1;
+                document.getElementById('cloudFileCount').textContent = this.sharedContext.globalState.cloudFiles.size;
+                
+                // Simulate memory usage
+                const baseMemory = 50;
+                const additionalMemory = this.levels.size * 25;
+                document.getElementById('memoryUsage').textContent = `~${baseMemory + additionalMemory}MB`;
+            }
+
+            closeNestedBrowser(level) {
+                const levelData = this.levels.get(level);
+                if (levelData) {
+                    levelData.element.remove();
+                    this.levels.delete(level);
+                    this.updateLevelsList();
+                    this.updateStats();
+                }
+            }
+
+            maximizeNestedBrowser(level) {
+                const levelData = this.levels.get(level);
+                if (levelData) {
+                    const element = levelData.element;
+                    
+                    if (element.classList.contains('maximized')) {
+                        element.classList.remove('maximized');
+                        element.style.position = '';
+                        element.style.top = '';
+                        element.style.left = '';
+                        element.style.width = '';
+                        element.style.height = '';
+                        element.style.zIndex = '';
+                    } else {
+                        element.classList.add('maximized');
+                        element.style.position = 'fixed';
+                        element.style.top = '10px';
+                        element.style.left = '10px';
+                        element.style.width = 'calc(100vw - 20px)';
+                        element.style.height = 'calc(100vh - 20px)';
+                        element.style.zIndex = '999';
+                    }
+                }
+            }
+
+            startFloatingGlyphs() {
+                const glyphs = ['🌐', '🔗', '⚡', '💾', '🧬', '🌊', '🔮', '✨', '🚀', '💎'];
+                const container = document.getElementById('floatingGlyphs');
+                
+                setInterval(() => {
+                    if (container.children.length < 8) {
+                        const glyph = document.createElement('div');
+                        glyph.className = 'glyph';
+                        glyph.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+                        glyph.style.left = Math.random() * 100 + '%';
+                        glyph.style.animationDuration = (Math.random() * 20 + 20) + 's';
+                        container.appendChild(glyph);
+                        
+                        setTimeout(() => {
+                            if (glyph.parentNode) {
+                                glyph.parentNode.removeChild(glyph);
+                            }
+                        }, 40000);
+                    }
+                }, 3000);
+            }
+
+            // Cloud file operations
+            async accessCloudFile(path) {
+                console.log(`☁️ Accessing cloud file: ${path}`);
+                // Implementation will connect to cloud-stream-filesystem.ts
+                return { path, content: `Content of ${path}` };
+            }
+
+            async syncData(data) {
+                console.log(`🔄 Syncing data to cloud storage`);
+                // Implementation for cross-level data synchronization
+            }
+
+            // Fallback iframe creation methods
+            createStandardIframe(url) {
+                const iframe = document.createElement('iframe');
+                iframe.src = url;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                iframe.sandbox = 'allow-same-origin allow-scripts allow-forms allow-downloads allow-modals allow-popups';
+                return iframe;
+            }
+
+            createFallbackIframe(url) {
+                const domain = new URL(url).hostname;
+                const fallbackHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>External Site</title>
+                        <style>
+                            body { 
+                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                margin: 0;
+                                padding: 20px;
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                text-align: center;
+                            }
+                            .wrapper {
+                                background: rgba(255, 255, 255, 0.1);
+                                backdrop-filter: blur(10px);
+                                border-radius: 16px;
+                                padding: 30px;
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                max-width: 350px;
+                            }
+                            .icon { font-size: 3rem; margin-bottom: 15px; }
+                            h3 { margin-bottom: 10px; font-size: 1.2rem; }
+                            p { opacity: 0.9; margin-bottom: 20px; font-size: 0.9rem; }
+                            .btn {
+                                background: rgba(255, 255, 255, 0.2);
+                                color: white;
+                                border: 1px solid rgba(255, 255, 255, 0.3);
+                                padding: 10px 20px;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 0.8rem;
+                                text-decoration: none;
+                                display: inline-block;
+                                transition: all 0.2s ease;
+                            }
+                            .btn:hover { 
+                                background: rgba(255, 255, 255, 0.3);
+                                transform: translateY(-1px);
+                            }
+                            .domain { 
+                                font-family: 'Monaco', monospace;
+                                background: rgba(0, 0, 0, 0.2);
+                                padding: 2px 6px;
+                                border-radius: 3px;
+                                font-size: 0.8rem;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="wrapper">
+                            <div class="icon">🔒</div>
+                            <h3>Cannot Embed</h3>
+                            <p><span class="domain">${domain}</span> blocks iframe embedding</p>
+                            <a href="${url}" target="_blank" class="btn">Open in New Tab</a>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                const blob = new Blob([fallbackHtml], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = blobUrl;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                
+                return iframe;
+            }
+
+            // Communication methods
+            communicateUp(level, message) {
+                const levelData = this.levels.get(level);
+                if (levelData && levelData.parentLevel !== undefined) {
+                    const parentData = this.levels.get(levelData.parentLevel);
+                    if (parentData) {
+                        parentData.iframe.contentWindow.postMessage(message, '*');
+                    }
+                }
+            }
+
+            communicateDown(fromLevel, toLevel, message) {
+                const targetData = this.levels.get(toLevel);
+                if (targetData) {
+                    targetData.iframe.contentWindow.postMessage(message, '*');
+                }
+            }
+        }
+
+        // Global instance
+        window.nestedBrowserSystem = new NestedBrowserSystem();
+
+        // Global functions for UI
+        window.showAddLevelModal = () => {
+            document.getElementById('addLevelModal').style.display = 'flex';
+        };
+
+        window.closeAddLevelModal = () => {
+            document.getElementById('addLevelModal').style.display = 'none';
+        };
+
+        window.addNestedLevel = async () => {
+            const url = document.getElementById('newLevelUrl').value;
+            const title = document.getElementById('newLevelTitle').value;
+            const parentLevel = parseInt(document.getElementById('newLevelParent').value);
+            const size = document.getElementById('newLevelSize').value;
+
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            await nestedBrowserSystem.createNestedBrowser({
+                url,
+                title,
+                parentLevel,
+                size
+            });
+
+            closeAddLevelModal();
+            
+            // Clear form
+            document.getElementById('newLevelUrl').value = '';
+            document.getElementById('newLevelTitle').value = '';
+        };
+
+        // Quick action functions
+        window.addCollectiveDashboard = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 's0fractal-autonomous-launcher.html',
+                title: 'S0Fractal Collective',
+                size: 'large'
+            });
+        };
+
+        window.addGoogleDrive = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://drive.google.com',
+                title: 'Google Drive',
+                size: 'medium'
+            });
+        };
+
+        window.addVSCode = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://vscode.dev',
+                title: 'VSCode Web',
+                size: 'large'
+            });
+        };
+
+        window.addJupyter = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://colab.research.google.com',
+                title: 'Jupyter Notebook',
+                size: 'large'
+            });
+        };
+
+        window.addGitHub = async () => {
+            // Використовуємо GitHub1s як embeddable альтернативу
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://github1s.com',
+                title: 'GitHub1s (Embeddable)',
+                size: 'large'
+            });
+        };
+
+        window.addStackBlitz = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://stackblitz.com',
+                title: 'StackBlitz',
+                size: 'large'
+            });
+        };
+
+        window.addCodePen = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://codepen.io',
+                title: 'CodePen',
+                size: 'large'
+            });
+        };
+
+        window.addFigma = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://figma.com',
+                title: 'Figma',
+                size: 'large'
+            });
+        };
+
+        window.addExcalidraw = async () => {
+            await nestedBrowserSystem.createNestedBrowser({
+                url: 'https://excalidraw.com',
+                title: 'Excalidraw',
+                size: 'medium'
+            });
+        };
+
+        // Main browser navigation
+        window.navigateBack = () => {
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.contentWindow.history.back();
+        };
+
+        window.navigateForward = () => {
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.contentWindow.history.forward();
+        };
+
+        window.refreshMainBrowser = () => {
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.src = mainBrowser.src;
+        };
+
+        window.handleUrlBarEnter = (event) => {
+            if (event.key === 'Enter') {
+                navigateToUrl();
+            }
+        };
+
+        window.navigateToUrl = () => {
+            const url = document.getElementById('mainUrlBar').value;
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.src = url;
+        };
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('addLevelModal');
+            if (event.target === modal) {
+                closeAddLevelModal();
+            }
+        });
+
+        console.log("🌐 Nested Browser-in-Browser Launcher ready!");
+    </script>
+</body>
+</html>

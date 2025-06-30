@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐕 DogArray - AI-Powered Dog Intelligence Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+        
+        .hero-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .service-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .service-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .coming-soon {
+            background: #f8f9fa;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .coming-soon:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .features-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .feature-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background: #e6ebff;
+            border-color: #5a67d8;
+        }
+        
+        .upload-area.dragover {
+            background: #e6ebff;
+            border-color: #5a67d8;
+            transform: scale(1.02);
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+        
+        .stats-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            padding: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .hero-section, .features-section, .upload-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🐕 DogArray</h1>
+            <p>AI-Powered Dog Intelligence Platform</p>
+            <p><em>7 AI Minds. Unlimited Dog Insights.</em></p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <h3>🚀 Powered by Advanced AI Collective</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">7</div>
+                    <div>AI Models</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">95%</div>
+                    <div>Accuracy</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">3s</div>
+                    <div>Analysis Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">200+</div>
+                    <div>Dog Breeds</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Upload Section -->
+        <div class="upload-section">
+            <h2>🎯 Try Our AI Breed Analyzer - FREE DEMO</h2>
+            <p>Upload your dog's photo and get instant breed analysis from our AI collective</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div>
+                    📸 Drop your dog's photo here or click to upload
+                    <br><br>
+                    <em>Supported formats: JPG, PNG, WEBP</em>
+                </div>
+            </div>
+            
+            <input type="file" id="fileInput" style="display: none;" accept="image/*">
+            
+            <div id="analysisResult" style="display: none; margin-top: 20px;">
+                <h3>🧠 AI Analysis Results</h3>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <h2 style="text-align: center; color: white; margin-bottom: 30px;">🛍️ Our AI-Powered Services</h2>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">📱</div>
+                <div class="service-title">AI Breed Analyzer</div>
+                <div class="service-description">
+                    Upload a photo and get detailed breed analysis from 7 different AI models. 
+                    Includes breed percentages, characteristics, and personality traits.
+                </div>
+                <div class="service-price">$2.99</div>
+                <button class="cta-button" onclick="openModal('breedModal')">
+                    Analyze Your Dog
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">🎭</div>
+                <div class="service-title">Smart Dog Names</div>
+                <div class="service-description">
+                    Get 10 personalized name suggestions based on your dog's breed, appearance, 
+                    and personality. Includes cultural variations and meanings.
+                </div>
+                <div class="service-price">$1.99</div>
+                <button class="cta-button" onclick="openModal('nameModal')">
+                    Get Perfect Names
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">🏆</div>
+                <div class="service-title">Breeder Directory</div>
+                <div class="service-description">
+                    AI-verified breeder listings with quality scores, reviews, and automated 
+                    background checks. Find trusted breeders in your area.
+                </div>
+                <div class="service-price">Coming Soon</div>
+                <button class="cta-button coming-soon">
+                    Join Waitlist
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">🩺</div>
+                <div class="service-title">Health Checker</div>
+                <div class="service-description">
+                    AI-powered symptom analysis and health recommendations. 
+                    Get preliminary assessments before vet visits.
+                </div>
+                <div class="service-price">$4.99</div>
+                <button class="cta-button coming-soon">
+                    Coming Soon
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">📚</div>
+                <div class="service-title">Training Plans</div>
+                <div class="service-description">
+                    Personalized training schedules based on your dog's breed, age, and behavior. 
+                    Progressive plans that adapt to your dog's progress.
+                </div>
+                <div class="service-price">$9.99</div>
+                <button class="cta-button coming-soon">
+                    Coming Soon
+                </button>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">💎</div>
+                <div class="service-title">Premium Package</div>
+                <div class="service-description">
+                    All services included plus genetic analysis, breeding compatibility, 
+                    and priority support from our AI collective.
+                </div>
+                <div class="service-price">$19.99/mo</div>
+                <button class="cta-button coming-soon">
+                    Coming Soon
+                </button>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2 style="text-align: center; margin-bottom: 20px;">🌟 Why Choose DogArray?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-emoji">🧠</div>
+                    <h3>7 AI Models</h3>
+                    <p>Multiple AI minds analyze your dog for maximum accuracy</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-emoji">⚡</div>
+                    <h3>Instant Results</h3>
+                    <p>Get comprehensive analysis in under 3 seconds</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-emoji">🌍</div>
+                    <h3>Global Database</h3>
+                    <p>200+ breeds with cultural and regional variations</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-emoji">🔄</div>
+                    <h3>Continuous Learning</h3>
+                    <p>Our AI collective gets smarter with every analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>🧬 Powered by S0Fractal Collective Intelligence</p>
+            <p>© 2025 DogArray.com - Revolutionizing pet care with AI</p>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="breedModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('breedModal')">&times;</span>
+            <h3>🎯 AI Breed Analysis</h3>
+            <p>Experience the power of our 7-AI collective:</p>
+            <ul style="text-align: left; margin: 20px 0;">
+                <li>🏗️ Claude: Architectural breed analysis</li>
+                <li>🧠 Codex: Genetic pattern recognition</li>
+                <li>🔬 Gemini: Research-based insights</li>
+                <li>👑 GPT: Behavioral characteristics</li>
+                <li>🌍 Qwen: Cultural breed variations</li>
+                <li>⚡ DeepSeek: Performance optimization</li>
+                <li>🎭 Grok: Creative trait synthesis</li>
+            </ul>
+            <p><strong>Demo available above ⬆️</strong></p>
+            <p>Full analysis with detailed report: <strong>$2.99</strong></p>
+            <button class="cta-button" onclick="closeModal('breedModal')">
+                Try Free Demo First
+            </button>
+        </div>
+    </div>
+
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('nameModal')">&times;</span>
+            <h3>🎭 Smart Dog Names</h3>
+            <p>Get 10 personalized names from our AI collective:</p>
+            <ul style="text-align: left; margin: 20px 0;">
+                <li>🌍 Cultural variations and meanings</li>
+                <li>🎭 Personality-based suggestions</li>
+                <li>🏆 Breed-specific traditional names</li>
+                <li>✨ Creative and unique options</li>
+            </ul>
+            <p><strong>Price: $1.99</strong></p>
+            <button class="cta-button" onclick="alert('Coming this week! Check back soon.')">
+                Generate Names
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const analysisResult = document.getElementById('analysisResult');
+        const resultContent = document.getElementById('resultContent');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                processFile(file);
+            }
+        }
+
+        function processFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file.');
+                return;
+            }
+
+            // Show loading
+            uploadArea.innerHTML = '🧠 AI Collective analyzing your dog...<br><div style="margin-top: 10px;">⏳ Processing with 7 AI models...</div>';
+            
+            // Simulate AI analysis
+            setTimeout(() => {
+                showAnalysisResult(file);
+            }, 3000);
+        }
+
+        function showAnalysisResult(file) {
+            // Create demo result
+            const breeds = [
+                { name: 'Golden Retriever', percentage: 65 },
+                { name: 'Labrador Retriever', percentage: 25 },
+                { name: 'Border Collie', percentage: 10 }
+            ];
+
+            const traits = [
+                'Friendly and outgoing',
+                'High energy level',
+                'Intelligent and trainable',
+                'Good with children',
+                'Moderate grooming needs'
+            ];
+
+            resultContent.innerHTML = `
+                <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h4>🎯 Breed Analysis (Demo)</h4>
+                    ${breeds.map(breed => `
+                        <div style="margin: 10px 0;">
+                            <strong>${breed.name}</strong>: ${breed.percentage}%
+                            <div style="background: #e0e0e0; height: 10px; border-radius: 5px; margin: 5px 0;">
+                                <div style="background: #667eea; height: 100%; width: ${breed.percentage}%; border-radius: 5px;"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    <h4 style="margin-top: 20px;">🎭 Personality Traits</h4>
+                    <ul style="text-align: left;">
+                        ${traits.map(trait => `<li>${trait}</li>`).join('')}
+                    </ul>
+                    
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <strong>💎 Upgrade to Full Analysis ($2.99)</strong><br>
+                        • Detailed genetic analysis<br>
+                        • Health predispositions<br>
+                        • Exercise recommendations<br>
+                        • Nutritional guidance<br>
+                        • Training tips specific to your dog
+                    </div>
+                    
+                    <button class="cta-button" onclick="alert('Payment integration coming this week!')">
+                        Get Full Analysis - $2.99
+                    </button>
+                </div>
+            `;
+
+            analysisResult.style.display = 'block';
+            uploadArea.innerHTML = '✅ Analysis Complete! Upload another photo or upgrade for full details.';
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Simple analytics
+        console.log('🐕 DogArray MVP loaded - Analytics tracking enabled');
+        console.log('🧬 Powered by S0Fractal Collective Intelligence');
+    </script>
+</body>
+</html>

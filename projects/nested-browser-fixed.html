@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 Nested Browser System (Fixed)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-areas: 
+                "sidebar main-browser"
+                "sidebar nested-browsers";
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: 60vh 40vh;
+            height: 100vh;
+            gap: 5px;
+            padding: 5px;
+        }
+
+        .sidebar {
+            grid-area: sidebar;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+        }
+
+        .main-browser {
+            grid-area: main-browser;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nested-browsers {
+            grid-area: nested-browsers;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .browser-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .nested-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            height: 100%;
+        }
+
+        .nested-browser {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .browser-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .browser-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .control-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+        }
+
+        .control-btn.close { background: #ff5f56; }
+        .control-btn.minimize { background: #ffbd2e; }
+        .control-btn.maximize { background: #27ca3f; }
+
+        .browser-title {
+            font-size: 0.8rem;
+            color: #888;
+            flex: 1;
+        }
+
+        .browser-body {
+            height: calc(100% - 40px);
+        }
+
+        .browser-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .add-level-btn {
+            background: linear-gradient(45deg, #00ff88, #0099ff);
+            color: #0a0a0a;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .add-level-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .main-browser-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .url-bar {
+            flex: 1;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #e0e0e0;
+            font-size: 0.8rem;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0e0e0;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-browser-body {
+            height: calc(100% - 60px);
+            margin-top: 60px;
+        }
+
+        /* Fallback wrapper styles */
+        .fallback-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .fallback-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 300px;
+        }
+
+        .fallback-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .fallback-title {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .fallback-description {
+            opacity: 0.9;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .fallback-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .fallback-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .domain-tag {
+            font-family: 'Monaco', monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .status-indicator {
+            padding: 4px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .status-fallback {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+
+        .status-blocked {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="workspace">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">🌐 Browser Levels</div>
+                <div id="levelsList">
+                    <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; margin-bottom: 8px;">
+                        <div style="font-weight: bold; color: #00ff88;">Level 0</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Host Browser (Main)</div>
+                    </div>
+                </div>
+                <button class="add-level-btn" onclick="showCustomUrlPrompt()">+ Add Custom URL</button>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚡ Embeddable Services</div>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="addCollectiveDashboard()">🤖 S0Fractal Collective</button>
+                    <button class="quick-btn" onclick="addGitHubCodespaces()">💻 GitHub Codespaces</button>
+                    <button class="quick-btn" onclick="addReplit()">🔧 Replit</button>
+                    <button class="quick-btn" onclick="addCodeSandbox()">📦 CodeSandbox</button>
+                    <button class="quick-btn" onclick="addObservable()">📊 Observable</button>
+                    <button class="quick-btn" onclick="addJSFiddle()">🔬 JSFiddle</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">🔒 Blocked (with Fallback)</div>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="addBlockedSite('https://github.com', 'GitHub')">🐙 GitHub</button>
+                    <button class="quick-btn" onclick="addBlockedSite('https://vscode.dev', 'VSCode')">💻 VSCode</button>
+                    <button class="quick-btn" onclick="addBlockedSite('https://figma.com', 'Figma')">🎨 Figma</button>
+                    <button class="quick-btn" onclick="addBlockedSite('https://notion.so', 'Notion')">📝 Notion</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">📊 Stats</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">
+                    <div>Nested Levels: <span id="nestedCount">0</span></div>
+                    <div>Active Frames: <span id="frameCount">1</span></div>
+                    <div>Successful Embeds: <span id="successCount">0</span></div>
+                    <div>Fallback Pages: <span id="fallbackCount">0</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-browser">
+            <div class="main-browser-header">
+                <div class="browser-controls">
+                    <button class="control-btn close"></button>
+                    <button class="control-btn minimize"></button>
+                    <button class="control-btn maximize"></button>
+                </div>
+                <button class="nav-btn" onclick="navigateBack()">←</button>
+                <button class="nav-btn" onclick="navigateForward()">→</button>
+                <button class="nav-btn" onclick="refreshMainBrowser()">⟳</button>
+                <input type="text" class="url-bar" id="mainUrlBar" 
+                       value="s0fractal-autonomous-launcher.html" 
+                       onkeypress="handleUrlBarEnter(event)">
+                <button class="nav-btn" onclick="navigateToUrl()">Go</button>
+            </div>
+            <div class="main-browser-body">
+                <iframe class="browser-frame" id="mainBrowser" 
+                        src="s0fractal-autonomous-launcher.html"></iframe>
+            </div>
+        </div>
+
+        <div class="nested-browsers">
+            <div class="nested-grid" id="nestedGrid">
+                <!-- Nested browsers will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded Proxy System (вбудований прямо в HTML)
+        class EmbeddedProxySystem {
+            constructor() {
+                this.embeddableUrls = new Map([
+                    ['replit.com', 'https://replit.com'],
+                    ['codesandbox.io', 'https://codesandbox.io'],
+                    ['codepen.io', 'https://codepen.io'],
+                    ['jsfiddle.net', 'https://jsfiddle.net'],
+                    ['observable.com', 'https://observablehq.com'],
+                    ['glitch.com', 'https://glitch.com'],
+                    ['stackblitz.com', 'https://stackblitz.com']
+                ]);
+
+                this.alternatives = new Map([
+                    ['github.com', [
+                        { url: 'https://github1s.com', name: 'GitHub1s' },
+                        { url: 'https://vscode.dev/github', name: 'VSCode GitHub' }
+                    ]],
+                    ['vscode.dev', [
+                        { url: 'https://stackblitz.com', name: 'StackBlitz' },
+                        { url: 'https://replit.com', name: 'Replit' }
+                    ]]
+                ]);
+            }
+
+            async createEmbeddableFrame(url, title) {
+                console.log(`🌐 Створення iframe для: ${url}`);
+                
+                const domain = this.extractDomain(url);
+                
+                // Перевіряємо чи URL embeddable
+                if (this.isEmbeddable(domain)) {
+                    return this.createDirectFrame(url, title, 'direct');
+                }
+                
+                // Шукаємо альтернативи
+                const alternatives = this.alternatives.get(domain);
+                if (alternatives) {
+                    for (const alt of alternatives) {
+                        if (this.isEmbeddable(this.extractDomain(alt.url))) {
+                            const altUrl = this.buildAlternativeUrl(alt, url);
+                            return this.createDirectFrame(altUrl, `${title} (${alt.name})`, 'alternative');
+                        }
+                    }
+                }
+                
+                // Fallback - створюємо інформаційну сторінку
+                return this.createFallbackFrame(url, title);
+            }
+
+            extractDomain(url) {
+                try {
+                    return new URL(url).hostname;
+                } catch {
+                    return url;
+                }
+            }
+
+            isEmbeddable(domain) {
+                // Список доменів що точно працюють з iframe
+                const embeddableDomains = [
+                    'replit.com',
+                    'codesandbox.io', 
+                    'jsfiddle.net',
+                    'observablehq.com',
+                    'glitch.com',
+                    'stackblitz.com',
+                    'github1s.com',
+                    'gitpod.io'
+                ];
+                
+                return embeddableDomains.some(d => domain.includes(d));
+            }
+
+            buildAlternativeUrl(alternative, originalUrl) {
+                if (alternative.name === 'GitHub1s') {
+                    return originalUrl.replace('github.com', 'github1s.com');
+                }
+                if (alternative.name === 'VSCode GitHub') {
+                    return `https://vscode.dev/github${originalUrl.replace('https://github.com', '')}`;
+                }
+                return alternative.url;
+            }
+
+            createDirectFrame(src, title, type) {
+                const iframe = document.createElement('iframe');
+                iframe.src = src;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                iframe.style.borderRadius = '8px';
+                iframe.sandbox = 'allow-same-origin allow-scripts allow-forms allow-downloads allow-modals allow-popups';
+                
+                return {
+                    iframe,
+                    title,
+                    type,
+                    status: 'success'
+                };
+            }
+
+            createFallbackFrame(originalUrl, title) {
+                const domain = this.extractDomain(originalUrl);
+                
+                const fallbackHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Blocked Site</title>
+                        <style>
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                min-height: 100vh;
+                                text-align: center;
+                            }
+                            .content {
+                                background: rgba(255, 255, 255, 0.1);
+                                backdrop-filter: blur(10px);
+                                border-radius: 16px;
+                                padding: 30px;
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                max-width: 350px;
+                            }
+                            .icon { font-size: 3rem; margin-bottom: 15px; }
+                            h3 { margin-bottom: 10px; }
+                            p { opacity: 0.9; margin-bottom: 20px; font-size: 0.9rem; }
+                            .domain {
+                                font-family: 'Monaco', monospace;
+                                background: rgba(0, 0, 0, 0.2);
+                                padding: 4px 8px;
+                                border-radius: 4px;
+                                font-size: 0.8rem;
+                                display: inline-block;
+                                margin: 5px 0;
+                            }
+                            .btn {
+                                background: rgba(255, 255, 255, 0.2);
+                                color: white;
+                                border: 1px solid rgba(255, 255, 255, 0.3);
+                                padding: 12px 20px;
+                                border-radius: 8px;
+                                cursor: pointer;
+                                font-size: 0.9rem;
+                                text-decoration: none;
+                                display: inline-block;
+                                transition: all 0.3s ease;
+                                margin: 5px;
+                            }
+                            .btn:hover {
+                                background: rgba(255, 255, 255, 0.3);
+                                transform: translateY(-2px);
+                            }
+                            .alternatives {
+                                margin-top: 20px;
+                                padding-top: 20px;
+                                border-top: 1px solid rgba(255, 255, 255, 0.2);
+                            }
+                            .alt-title {
+                                font-size: 0.8rem;
+                                opacity: 0.8;
+                                margin-bottom: 10px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="content">
+                            <div class="icon">🔒</div>
+                            <h3>Cannot Embed Site</h3>
+                            <div class="domain">${domain}</div>
+                            <p>This site blocks iframe embedding for security reasons</p>
+                            <a href="${originalUrl}" target="_blank" class="btn">Open in New Tab</a>
+                            
+                            ${this.getAlternativesHTML(originalUrl)}
+                        </div>
+                    </body>
+                    </html>
+                `;
+                
+                const blob = new Blob([fallbackHtml], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = blobUrl;
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                iframe.style.border = 'none';
+                iframe.style.borderRadius = '8px';
+                
+                return {
+                    iframe,
+                    title: `${title} (Blocked)`,
+                    type: 'fallback',
+                    status: 'blocked'
+                };
+            }
+
+            getAlternativesHTML(originalUrl) {
+                const domain = this.extractDomain(originalUrl);
+                const alternatives = this.alternatives.get(domain);
+                
+                if (!alternatives) return '';
+                
+                const altButtons = alternatives.map(alt => 
+                    `<a href="${alt.url}" target="_blank" class="btn">${alt.name}</a>`
+                ).join('');
+                
+                return `
+                    <div class="alternatives">
+                        <div class="alt-title">Try these alternatives:</div>
+                        ${altButtons}
+                    </div>
+                `;
+            }
+        }
+
+        // Main Nested Browser System
+        class NestedBrowserSystem {
+            constructor() {
+                this.levels = new Map();
+                this.maxLevel = 0;
+                this.proxySystem = new EmbeddedProxySystem();
+                this.stats = {
+                    nested: 0,
+                    frames: 1,
+                    success: 0,
+                    fallback: 0
+                };
+                
+                this.updateStats();
+            }
+
+            async createNestedBrowser(url, title, size = 'medium') {
+                const level = this.maxLevel + 1;
+                this.maxLevel = level;
+
+                console.log(`🌐 Створення Level ${level}: ${title}`);
+
+                // Створюємо iframe через proxy систему
+                const frameResult = await this.proxySystem.createEmbeddableFrame(url, title);
+                
+                // Створюємо браузер контейнер
+                const browserElement = this.createBrowserElement(level, frameResult, size);
+                this.addToNestedGrid(browserElement);
+                
+                // Зберігаємо дані рівня
+                const levelData = {
+                    level,
+                    element: browserElement,
+                    iframe: frameResult.iframe,
+                    config: { url, title, size },
+                    frameResult
+                };
+
+                this.levels.set(level, levelData);
+                this.updateLevelsList();
+                this.updateStatsCounters(frameResult.status);
+
+                return levelData;
+            }
+
+            createBrowserElement(level, frameResult, size) {
+                const browserDiv = document.createElement('div');
+                browserDiv.className = 'nested-browser';
+                browserDiv.dataset.level = level;
+
+                const statusClass = frameResult.status === 'success' ? 'status-success' : 
+                                   frameResult.status === 'blocked' ? 'status-blocked' : 'status-fallback';
+
+                browserDiv.innerHTML = `
+                    <div class="browser-header">
+                        <div class="browser-controls">
+                            <button class="control-btn close" onclick="closeNestedBrowser(${level})"></button>
+                            <button class="control-btn minimize"></button>
+                            <button class="control-btn maximize"></button>
+                        </div>
+                        <div class="browser-title">
+                            Level ${level}: ${frameResult.title}
+                            <span class="status-indicator ${statusClass}">${frameResult.type}</span>
+                        </div>
+                    </div>
+                    <div class="browser-body"></div>
+                `;
+
+                // Додаємо iframe
+                const browserBody = browserDiv.querySelector('.browser-body');
+                browserBody.appendChild(frameResult.iframe);
+
+                return browserDiv;
+            }
+
+            addToNestedGrid(browserElement) {
+                const nestedGrid = document.getElementById('nestedGrid');
+                nestedGrid.appendChild(browserElement);
+            }
+
+            updateLevelsList() {
+                const levelsList = document.getElementById('levelsList');
+                let html = `
+                    <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; margin-bottom: 8px;">
+                        <div style="font-weight: bold; color: #00ff88;">Level 0</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">Host Browser (Main)</div>
+                    </div>
+                `;
+
+                for (const [level, data] of this.levels) {
+                    const statusColor = data.frameResult.status === 'success' ? '#00ff88' : 
+                                       data.frameResult.status === 'blocked' ? '#ff4444' : '#ffaa00';
+                    
+                    html += `
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; margin-bottom: 8px;">
+                            <div style="font-weight: bold; color: ${statusColor};">Level ${level}</div>
+                            <div style="font-size: 0.8rem; opacity: 0.8;">${data.frameResult.title}</div>
+                        </div>
+                    `;
+                }
+
+                levelsList.innerHTML = html;
+            }
+
+            updateStatsCounters(status) {
+                this.stats.nested = this.levels.size;
+                this.stats.frames = this.levels.size + 1;
+                
+                if (status === 'success') this.stats.success++;
+                else this.stats.fallback++;
+                
+                this.updateStats();
+            }
+
+            updateStats() {
+                document.getElementById('nestedCount').textContent = this.stats.nested;
+                document.getElementById('frameCount').textContent = this.stats.frames;
+                document.getElementById('successCount').textContent = this.stats.success;
+                document.getElementById('fallbackCount').textContent = this.stats.fallback;
+            }
+
+            closeNestedBrowser(level) {
+                const levelData = this.levels.get(level);
+                if (levelData) {
+                    levelData.element.remove();
+                    this.levels.delete(level);
+                    this.updateLevelsList();
+                    this.stats.nested = this.levels.size;
+                    this.stats.frames = this.levels.size + 1;
+                    this.updateStats();
+                }
+            }
+        }
+
+        // Глобальна система
+        const browserSystem = new NestedBrowserSystem();
+
+        // UI Functions
+        async function addCollectiveDashboard() {
+            await browserSystem.createNestedBrowser(
+                's0fractal-autonomous-launcher.html',
+                'S0Fractal Collective',
+                'large'
+            );
+        }
+
+        async function addGitHubCodespaces() {
+            await browserSystem.createNestedBrowser(
+                'https://github.dev',
+                'GitHub Codespaces',
+                'large'
+            );
+        }
+
+        async function addReplit() {
+            await browserSystem.createNestedBrowser(
+                'https://replit.com',
+                'Replit',
+                'large'
+            );
+        }
+
+        async function addCodeSandbox() {
+            await browserSystem.createNestedBrowser(
+                'https://codesandbox.io',
+                'CodeSandbox',
+                'large'
+            );
+        }
+
+        async function addObservable() {
+            await browserSystem.createNestedBrowser(
+                'https://observablehq.com',
+                'Observable',
+                'large'
+            );
+        }
+
+        async function addJSFiddle() {
+            await browserSystem.createNestedBrowser(
+                'https://jsfiddle.net',
+                'JSFiddle',
+                'medium'
+            );
+        }
+
+        async function addBlockedSite(url, name) {
+            await browserSystem.createNestedBrowser(url, name, 'medium');
+        }
+
+        function showCustomUrlPrompt() {
+            const url = prompt('Enter URL to embed:');
+            if (url) {
+                const title = prompt('Enter title:') || 'Custom Site';
+                browserSystem.createNestedBrowser(url, title, 'medium');
+            }
+        }
+
+        function closeNestedBrowser(level) {
+            browserSystem.closeNestedBrowser(level);
+        }
+
+        // Main browser navigation
+        function navigateBack() {
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.contentWindow.history.back();
+        }
+
+        function navigateForward() {
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.contentWindow.history.forward();
+        }
+
+        function refreshMainBrowser() {
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.src = mainBrowser.src;
+        }
+
+        function handleUrlBarEnter(event) {
+            if (event.key === 'Enter') {
+                navigateToUrl();
+            }
+        }
+
+        function navigateToUrl() {
+            const url = document.getElementById('mainUrlBar').value;
+            const mainBrowser = document.getElementById('mainBrowser');
+            mainBrowser.src = url;
+        }
+
+        console.log("🌐 Nested Browser System (Fixed) ready!");
+    </script>
+</body>
+</html>
