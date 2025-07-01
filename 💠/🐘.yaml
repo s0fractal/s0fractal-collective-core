@@ -1,0 +1,28 @@
+🧬: 🐘
+slug: supabase-core
+version: 0.1.0
+🌊: база
+🫧: звʼязок
+🧠:
+  description: |
+    Живий вузол даних. Supabase є серцем збереження, подій і тригерів.
+    Служить як точка правди і відлуння у фрактальній системі.
+    Внутрішня структура схожа на Postgres, але обгорнута API і потоками.
+  init_status: active
+  behavior: async_api_store
+  priority: infrastructure
+  language: pg + edge
+  intent_protocol: glyph://infra/supabase
+🔗:
+  - glyph://store/data/postgres
+  - glyph://trigger/event/fire
+  - glyph://heartbeat/💓
+  - glyph://core/persistence
+  - glyph://🦕/init_supabase
+🫀: 💓
+🏠: https://supabase.com
+🤲: джерело, синхронізація, пульсування
+🎯: збереження, доступ, контроль
+📦: core
+📍: glyph://bootstrap/supabase
+⏱️: 2025-06-30T02:20:00Z

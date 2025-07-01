@@ -1,0 +1,4 @@
+🌀: "hello-world"
+⚙️:
+  script: |
+    console.log("Hello from Deno!")
