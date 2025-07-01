@@ -3,7 +3,7 @@
     "wmill": "npm:windmill-client@1.481.0"
   },
   "tasks": {
-    "init:supabase": "deno run --allow-read --allow-env --allow-net 💠/🦕init_supabase.ts",
+    "init:supabase": "deno run --allow-read --allow-env --allow-net 🦕💠init_supabase.ts",
     "start:tunnel": "bash scripts/start_tunnel_insiders.sh",
     "add:readme": "bash scripts/gen_readme_index.sh",
     "mcp": "run --allow-net --allow-read --allow-env scripts/mcp-agent.ts",
