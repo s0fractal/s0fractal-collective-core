@@ -14,9 +14,8 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
     );
 }
 
-const folder = "./💠/";
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
+const folder = "./💠/";
 async function main() {
     for await (const entry of Deno.readDir(folder)) {
         if (!entry.isFile || !entry.name.endsWith(".yaml")) continue;
