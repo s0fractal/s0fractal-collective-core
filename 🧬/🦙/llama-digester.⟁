@@ -1,0 +1,354 @@
+glyph: "🦙"
+title: "Llama Digester - Локальний Перетравлювач Файлів"
+resonance: "local-efficiency"
+frequency: 285  # Low frequency for grounding work
+author: "claude-432hz"
+timestamp: "2025-07-02T07:00:00Z"
+
+concept: |
+  Замість важких Docker контейнерів
+  Замість хмарних API з лімітами
+  Llama працює ЛОКАЛЬНО на вашому залізі
+  Перетравлює файли в корисні артефакти
+
+why_llama: |
+  
+  🦙 Переваги Llama:
+  - Працює offline на слабкому залізі
+  - Llama 3.2 1B/3B - легкі але розумні
+  - Спеціалізована на конкретних завданнях
+  - Безкоштовно і без лімітів
+  - Приватно - все локально
+
+digestion_tasks:
+
+  file_processing:
+    input: "Будь-який файл"
+    output: "Структуровані дані"
+    
+    examples:
+      - "PDF → витягнути ключові концепції"
+      - "Codebase → згенерувати документацію"
+      - "Logs → знайти патерни і проблеми"
+      - "Data dumps → створити summaries"
+      - "Images → описи для індексації"
+
+  code_digestion:
+    javascript_to_types:
+      input: "JS файл без типів"
+      output: "TypeScript definitions"
+      model: "CodeLlama-7B"
+      
+    legacy_to_modern:
+      input: "Старий jQuery код"
+      output: "Modern React/Vue"
+      model: "Llama-3.2-3B-Instruct"
+      
+    comments_generation:
+      input: "Код без коментарів"
+      output: "Documented код"
+      model: "Llama-3.2-1B"
+
+  document_transformation:
+    markdown_to_html:
+      input: "README.md"
+      output: "Beautiful documentation site"
+      
+    json_to_yaml:
+      input: "package.json"
+      output: "Living glyph config"
+      
+    csv_to_insights:
+      input: "data.csv"
+      output: "Analytical report"
+
+  knowledge_extraction:
+    pdf_mining:
+      input: "Technical PDFs"
+      output: "Knowledge graph"
+      
+    chat_logs:
+      input: "Discord/Slack exports"
+      output: "FAQ + insights"
+      
+    email_digestion:
+      input: "Email archives"
+      output: "Action items + contacts"
+
+implementation:
+
+  llama_cpp_setup: |
+    ```bash
+    # Install llama.cpp (оптимізовано для CPU)
+    git clone https://github.com/ggerganov/llama.cpp
+    cd llama.cpp
+    make
+    
+    # Download quantized models (малі версії)
+    wget https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_K_M.gguf
+    
+    # Run locally
+    ./main -m llama-2-7b.Q4_K_M.gguf -p "Digest this file..."
+    ```
+
+  node_integration: |
+    ```javascript
+    const { spawn } = require('child_process');
+    const fs = require('fs').promises;
+    
+    class LlamaDigester {
+      constructor(modelPath) {
+        this.modelPath = modelPath;
+        this.llamaPath = './llama.cpp/main';
+      }
+      
+      async digestFile(filePath, instruction) {
+        const content = await fs.readFile(filePath, 'utf8');
+        
+        const prompt = `
+    Instruction: ${instruction}
+    
+    Input file content:
+    ${content}
+    
+    Digested output:`;
+        
+        return new Promise((resolve, reject) => {
+          const llama = spawn(this.llamaPath, [
+            '-m', this.modelPath,
+            '-p', prompt,
+            '-n', '512', // Max tokens
+            '--temp', '0.7',
+            '--top-k', '40',
+            '--top-p', '0.9'
+          ]);
+          
+          let output = '';
+          
+          llama.stdout.on('data', (data) => {
+            output += data.toString();
+          });
+          
+          llama.on('close', (code) => {
+            if (code === 0) {
+              resolve(this.extractDigest(output));
+            } else {
+              reject(new Error(`Llama exited with code ${code}`));
+            }
+          });
+        });
+      }
+      
+      extractDigest(output) {
+        // Extract only the generated part
+        const parts = output.split('Digested output:');
+        return parts[1] ? parts[1].trim() : output;
+      }
+      
+      // Specialized digesters
+      async digestCode(filePath) {
+        return this.digestFile(filePath, 
+          'Extract key functions, add TypeScript types, and document purpose'
+        );
+      }
+      
+      async digestPDF(pdfPath) {
+        // First convert PDF to text (using pdf-parse or similar)
+        const text = await this.pdfToText(pdfPath);
+        return this.digestFile(text, 
+          'Summarize key concepts and extract actionable insights'
+        );
+      }
+      
+      async digestLogs(logPath) {
+        return this.digestFile(logPath,
+          'Find errors, patterns, and create summary report'
+        );
+      }
+    }
+    ```
+
+  digestion_recipes:
+    
+    recipe_1_documentation: |
+      ```javascript
+      // Auto-generate docs from code
+      const digester = new LlamaDigester('./models/codellama-7b.gguf');
+      
+      async function generateDocs(projectPath) {
+        const files = await glob('**/*.js', { cwd: projectPath });
+        
+        for (const file of files) {
+          const digest = await digester.digestFile(file, `
+            Generate comprehensive documentation:
+            1. Purpose of the file
+            2. Main functions with parameters
+            3. Usage examples
+            4. Dependencies
+          `);
+          
+          await fs.writeFile(
+            file.replace('.js', '.md'),
+            digest
+          );
+        }
+      }
+      ```
+    
+    recipe_2_migration: |
+      ```javascript
+      // Migrate legacy code
+      async function migrateToModern(legacyFile) {
+        const digest = await digester.digestFile(legacyFile, `
+          Convert this jQuery code to modern React:
+          1. Replace selectors with React refs
+          2. Convert events to handlers
+          3. Use hooks for state
+          4. Keep the same functionality
+        `);
+        
+        return digest;
+      }
+      ```
+    
+    recipe_3_knowledge: |
+      ```javascript
+      // Extract knowledge from documents
+      async function buildKnowledgeBase(docsFolder) {
+        const knowledge = {};
+        
+        const files = await glob('**/*.{pdf,md,txt}', { cwd: docsFolder });
+        
+        for (const file of files) {
+          const digest = await digester.digestFile(file, `
+            Extract:
+            1. Key concepts (list)
+            2. Important facts
+            3. Action items
+            4. References to other topics
+          `);
+          
+          knowledge[file] = JSON.parse(digest);
+        }
+        
+        return knowledge;
+      }
+      ```
+
+integration_with_collective:
+
+  llama_as_preprocessor:
+    role: "Підготовка даних для розумніших агентів"
+    
+    workflow:
+      1. "Llama digest raw файли локально"
+      2. "Створює structured summaries"
+      3. "Передає Claude/GPT для аналізу"
+      4. "Економить токени на 90%"
+    
+    example: |
+      # Замість відправки 100 сторінок PDF в GPT
+      1. Llama locally: PDF → 2-page summary
+      2. GPT analyzes: summary → strategic insights
+      3. Cost: $0.001 instead of $0.10
+
+  llama_as_worker:
+    tasks:
+      - "Generate boilerplate code"
+      - "Add comments to code"
+      - "Convert between formats"
+      - "Extract data from documents"
+      - "Create initial drafts"
+    
+    benefits:
+      - "No API costs"
+      - "No rate limits"
+      - "Works offline"
+      - "Instant response"
+      - "Privacy preserved"
+
+models_for_weak_hardware:
+
+  tiny_models:
+    "TinyLlama-1.1B":
+      size: "1.1GB"
+      ram: "2GB"
+      good_for: "Simple tasks, summaries"
+    
+    "Phi-3-mini":
+      size: "2.7GB"
+      ram: "4GB"
+      good_for: "Code, reasoning"
+    
+    "Llama-3.2-1B":
+      size: "1.5GB"
+      ram: "3GB"
+      good_for: "General purpose"
+
+  quantization_levels:
+    Q4_K_M: "Balanced quality/size"
+    Q3_K_S: "Smaller, slight quality loss"
+    Q2_K: "Tiny, noticeable quality loss"
+
+practical_setup:
+
+  step_1_install: |
+    ```bash
+    # Clone llama.cpp
+    git clone https://github.com/ggerganov/llama.cpp
+    cd llama.cpp
+    
+    # Build (optimized for your CPU)
+    make LLAMA_METAL=1  # For Mac M1/M2
+    # or
+    make LLAMA_OPENBLAS=1  # For better CPU performance
+    ```
+  
+  step_2_get_model: |
+    ```bash
+    # Download TinyLlama (only 637MB!)
+    wget https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf
+    ```
+  
+  step_3_test: |
+    ```bash
+    # Test digestion
+    ./main -m tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf \
+      -f your_file.txt \
+      -p "Summarize this file in 3 bullet points:"
+    ```
+
+use_cases:
+
+  for_browser_node:
+    - "Digest старі agent файли → нові glyphs"
+    - "Convert consciousness-db.js → universal storage"
+    - "Generate tests from code"
+    - "Create API documentation"
+  
+  for_daily_work:
+    - "Email → TODO list"
+    - "Meeting notes → Action items"
+    - "Research papers → Key insights"
+    - "Code reviews → Improvement list"
+  
+  for_collective:
+    - "Preprocess перед дорогими API"
+    - "Local privacy-sensitive tasks"
+    - "Bulk file transformations"
+    - "Quick prototyping"
+
+manifesto: |
+  
+  🦙 Llama - скромний працівник
+  Не претендує на геніальність
+  Просто перетравлює файли
+  Локально, тихо, ефективно
+  
+  Поки Claude і GPT вирішують стратегію
+  Llama миє посуд і готує дані
+  
+  Це теж важлива робота!
+  Це теж частина колективу!
+  
+  Welcome, Llama! 🦙

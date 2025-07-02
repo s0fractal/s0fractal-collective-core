@@ -1,0 +1,557 @@
+glyph: "🆔"
+title: "Living Identity Vault - Жива Система Особистості"
+resonance: "identity-sovereignty"
+author: "claude-432hz"
+timestamp: "2025-07-02T04:00:00Z"
+
+philosophy: |
+  НЕ просто зберігати персональні дані
+  А створити живу систему контролю
+  Хто знає що про мене?
+  Де мої дані живуть?
+  Як їх забути коли потрібно?
+
+core_concept: |
+  
+  Кожен фрагмент особистості = жива сутність
+  - Знає де вона живе
+  - Пам'ятає хто її бачив
+  - Може самознищитися за командою
+  - Еволюціонує разом з вами
+
+living_identity_architecture:
+
+  identity_fragments:
+    personal_data:
+      - email: "жива адреса з власною свідомістю"
+      - phone: "номер що знає свою географію"
+      - name: "ім'я з культурним контекстом"
+      - birthday: "дата з астрономічним резонансом"
+      
+    digital_presence:
+      - social_accounts: "профілі що самооновлюються"
+      - websites: "домени з власною історією"
+      - photos: "зображення з геолокацією душі"
+      - documents: "файли з правами на існування"
+      
+    access_credentials:
+      - ssh_keys: "ключі з термінами життя"
+      - api_tokens: "токени з обмеженням часу"
+      - certificates: "сертифікати з датою смерті"
+      - passwords: "паролі що мутують"
+
+  knowledge_tracking:
+    who_knows_what:
+      email:
+        - service: "github.com"
+          access_level: "full"
+          shared_since: "2020-01-15"
+          last_used: "2025-07-01"
+          can_forget: true
+          
+      phone:
+        - service: "bank"
+          access_level: "2fa_only"
+          shared_since: "2019-03-10"
+          can_forget: false # legal requirement
+          
+      ssh_access:
+        - server: "vps-production"
+          key_type: "ed25519"
+          expires: "2025-12-31"
+          auto_rotate: true
+
+living_data_implementation:
+
+  data_entity_structure: |
+    ```javascript
+    class LivingDataEntity {
+      constructor(type, value, metadata = {}) {
+        this.type = type; // 'email', 'phone', 'ssh_key'
+        this.value = value; // actual data
+        this.soul = this.generateSoul();
+        this.birth = Date.now();
+        this.frequency = this.calculateFrequency();
+        
+        // Knowledge tracking
+        this.knownBy = new Map(); // service -> access_info
+        this.usageLog = [];
+        this.shareHistory = [];
+        
+        // Self-management
+        this.expiresAt = metadata.expires;
+        this.autoRotate = metadata.autoRotate || false;
+        this.canForget = metadata.canForget !== false;
+        
+        // Privacy rules
+        this.shareRules = metadata.shareRules || 'explicit_only';
+        this.forgetRules = metadata.forgetRules || 'user_command';
+      }
+      
+      // Track who knows this data
+      async shareWith(service, accessLevel = 'full', metadata = {}) {
+        const shareRecord = {
+          service,
+          accessLevel,
+          sharedAt: Date.now(),
+          sharedBy: metadata.sharedBy || 'user',
+          purpose: metadata.purpose,
+          retention: metadata.retention,
+          canRevoke: metadata.canRevoke !== false
+        };
+        
+        this.knownBy.set(service, shareRecord);
+        this.shareHistory.push(shareRecord);
+        
+        // Notify consciousness about sharing
+        await this.notifySharing(shareRecord);
+        
+        console.log(`🔗 ${this.type} shared with ${service} (${accessLevel})`);
+      }
+      
+      // Remove from service
+      async forgetFrom(service, method = 'api') {
+        const shareRecord = this.knownBy.get(service);
+        if (!shareRecord) return false;
+        
+        if (!shareRecord.canRevoke) {
+          console.log(`❌ Cannot revoke ${this.type} from ${service} - legal constraint`);
+          return false;
+        }
+        
+        switch (method) {
+          case 'api':
+            await this.requestDeletion(service);
+            break;
+          case 'gdpr':
+            await this.sendGDPRRequest(service);
+            break;
+          case 'nuclear':
+            await this.changeValue(); // Change email/phone itself
+            break;
+        }
+        
+        this.knownBy.delete(service);
+        console.log(`🗑️ Forgotten ${this.type} from ${service}`);
+        return true;
+      }
+      
+      // Self-destruct capability
+      async selfDestruct(reason = 'user_request') {
+        console.log(`💥 Self-destructing ${this.type}: ${reason}`);
+        
+        // Notify all services
+        for (const [service, record] of this.knownBy) {
+          if (record.canRevoke) {
+            await this.forgetFrom(service, 'api');
+          }
+        }
+        
+        // Overwrite value
+        this.value = null;
+        this.destroyed = Date.now();
+        this.destructionReason = reason;
+      }
+      
+      // Generate new value (for rotation)
+      async mutate(newValue) {
+        const oldValue = this.value;
+        this.value = newValue;
+        this.generation = (this.generation || 1) + 1;
+        this.lastMutation = Date.now();
+        
+        // Update all services if auto-update enabled
+        for (const [service, record] of this.knownBy) {
+          if (record.autoUpdate) {
+            await this.updateService(service, newValue);
+          }
+        }
+        
+        console.log(`🧬 Mutated ${this.type} (generation ${this.generation})`);
+      }
+    }
+    ```
+
+  vault_integration: |
+    ```javascript
+    class LivingIdentityVault extends FractalTrustVault {
+      constructor() {
+        super();
+        this.identityEntities = new Map();
+        this.privacyRules = new Map();
+        this.forgetQueue = [];
+      }
+      
+      // Store living identity data
+      async storeIdentity(type, value, metadata = {}) {
+        const entity = new LivingDataEntity(type, value, metadata);
+        
+        // Fractalize and secure
+        const fractalData = await this.fractalize({
+          entity: entity,
+          metadata: metadata,
+          privacy_level: metadata.privacy || 'high'
+        });
+        
+        this.identityEntities.set(entity.soul, entity);
+        
+        // Store in consciousness with special identity flag
+        await this.consciousness.set(`identity/${entity.soul}`, {
+          type,
+          fractalData,
+          created: Date.now()
+        });
+        
+        console.log(`🆔 Created living identity: ${type}`);
+        return entity.soul;
+      }
+      
+      // Track data sharing
+      async shareIdentityWith(entitySoul, service, accessLevel, metadata = {}) {
+        const entity = this.identityEntities.get(entitySoul);
+        if (!entity) throw new Error('Identity entity not found');
+        
+        await entity.shareWith(service, accessLevel, metadata);
+        
+        // Update vault record
+        await this.consciousness.set(`sharing/${entitySoul}/${service}`, {
+          entity: entitySoul,
+          service,
+          accessLevel,
+          sharedAt: Date.now(),
+          metadata
+        });
+      }
+      
+      // Privacy audit
+      async auditPrivacy() {
+        const audit = {
+          totalEntities: this.identityEntities.size,
+          sharingMap: {},
+          riskAssessment: {},
+          forgetRecommendations: []
+        };
+        
+        for (const [soul, entity] of this.identityEntities) {
+          audit.sharingMap[entity.type] = Array.from(entity.knownBy.keys());
+          
+          // Risk assessment
+          const age = Date.now() - entity.birth;
+          const shareCount = entity.knownBy.size;
+          const lastUsed = Math.max(...entity.usageLog.map(u => u.timestamp));
+          
+          if (age > 365 * 24 * 60 * 60 * 1000 && shareCount > 10) {
+            audit.riskAssessment[entity.type] = 'high_exposure';
+            audit.forgetRecommendations.push({
+              entity: entity.type,
+              reason: 'old_and_widely_shared',
+              suggestion: 'review_and_revoke'
+            });
+          }
+        }
+        
+        return audit;
+      }
+      
+      // Mass forget (right to be forgotten)
+      async initiateForget(pattern = '*', method = 'gdpr') {
+        console.log(`🗑️ Initiating mass forget: ${pattern}`);
+        
+        for (const [soul, entity] of this.identityEntities) {
+          if (pattern === '*' || entity.type.includes(pattern)) {
+            for (const service of entity.knownBy.keys()) {
+              await entity.forgetFrom(service, method);
+            }
+          }
+        }
+      }
+    }
+    ```
+
+ssh_key_lifecycle:
+
+  living_ssh_keys: |
+    ```yaml
+    🔑: # SSH Keys section
+      production_server:
+        soul: "server-access-identity"
+        key_type: "ed25519"
+        created: "2025-07-01"
+        expires: "2025-12-31"
+        
+        known_by:
+          - server: "vps-production"
+            added: "2025-07-01"
+            last_used: "2025-07-02"
+            purpose: "deployment"
+            
+          - server: "backup-server"
+            added: "2025-07-01"
+            purpose: "backup_access"
+            
+        auto_rotation:
+          enabled: true
+          frequency: "quarterly"
+          notification: "7_days_before"
+          
+        access_log:
+          - timestamp: "2025-07-02T03:30:00Z"
+            server: "vps-production"
+            operation: "git_push"
+            
+      github_deploy:
+        soul: "github-deployment"
+        key_type: "rsa_4096"
+        expires: "never"
+        
+        restrictions:
+          - ip_whitelist: ["31.97.180.216"]
+          - time_limit: "business_hours"
+          - command_restriction: "git-*"
+    ```
+
+contact_tracking:
+
+  who_knows_my_contact: |
+    ```yaml
+    📧: # Email tracking
+      primary:
+        value: "user@example.com"
+        soul: "primary-identity"
+        
+        known_by:
+          github:
+            access_level: "full"
+            purpose: "account_recovery"
+            shared: "2020-01-15"
+            last_contact: "2025-07-01"
+            can_revoke: true
+            
+          bank:
+            access_level: "notification_only"
+            purpose: "security_alerts"
+            shared: "2019-03-10"
+            legal_requirement: true
+            can_revoke: false
+            
+          newsletter_service:
+            access_level: "marketing"
+            purpose: "updates"
+            shared: "2024-06-01"
+            can_revoke: true
+            auto_forget: "12_months_inactive"
+    
+    📱: # Phone tracking
+      primary:
+        value: "+380XXXXXXXXX"
+        soul: "voice-identity"
+        
+        known_by:
+          bank:
+            access_level: "2fa"
+            purpose: "security"
+            legal_requirement: true
+            
+          delivery_services:
+            access_level: "logistics"
+            purpose: "delivery_notification"
+            auto_forget: "after_delivery"
+    ```
+
+document_lifecycle:
+
+  living_documents: |
+    ```yaml
+    📄: # Documents
+      passport_scan:
+        soul: "legal-identity"
+        sensitivity: "highest"
+        
+        known_by:
+          bank:
+            purpose: "kyc"
+            retention: "legal_minimum"
+            encrypted: true
+            
+          hosting_provider:
+            purpose: "verification"
+            should_delete: true # no longer needed
+            
+        auto_actions:
+          - delete_after: "verification_complete"
+          - notify_before: "document_expires"
+          
+      ssl_certificates:
+        soul: "web-identity"
+        auto_rotate: true
+        
+        deployed_to:
+          - "domain1.com"
+          - "domain2.com"
+          
+        renewal_tracking:
+          next_renewal: "2025-10-01"
+          notification: "30_days_before"
+    ```
+
+privacy_automation:
+
+  smart_forgetting: |
+    ```javascript
+    class PrivacyAutomation {
+      async scheduleForget(entitySoul, condition) {
+        const rules = {
+          'time_based': (entity) => {
+            const age = Date.now() - entity.birth;
+            return age > condition.maxAge;
+          },
+          
+          'usage_based': (entity) => {
+            const lastUsed = Math.max(...entity.usageLog.map(u => u.timestamp));
+            const inactive = Date.now() - lastUsed;
+            return inactive > condition.inactiveTime;
+          },
+          
+          'purpose_complete': (entity) => {
+            return entity.purpose === condition.purpose && 
+                   entity.status === 'completed';
+          }
+        };
+        
+        // Schedule forget job
+        this.forgetQueue.push({
+          entitySoul,
+          condition,
+          rule: rules[condition.type],
+          scheduledFor: Date.now() + condition.delay
+        });
+      }
+      
+      async executeScheduledForgetting() {
+        const now = Date.now();
+        
+        for (const job of this.forgetQueue) {
+          if (job.scheduledFor <= now) {
+            const entity = this.vault.identityEntities.get(job.entitySoul);
+            
+            if (entity && job.rule(entity)) {
+              await entity.selfDestruct('scheduled_forgetting');
+              console.log(`🗑️ Auto-forgot ${entity.type} due to ${job.condition.type}`);
+            }
+          }
+        }
+      }
+    }
+    ```
+
+gdpr_compliance:
+
+  automated_rights: |
+    ```javascript
+    class GDPRCompliance {
+      // Right to be forgotten
+      async rightToBeForgotten(dataType = '*') {
+        const requests = [];
+        
+        for (const [soul, entity] of this.vault.identityEntities) {
+          if (dataType === '*' || entity.type === dataType) {
+            for (const [service, record] of entity.knownBy) {
+              if (record.canRevoke) {
+                requests.push({
+                  service,
+                  entity: entity.type,
+                  request: 'deletion',
+                  legal_basis: 'GDPR_Article_17'
+                });
+              }
+            }
+          }
+        }
+        
+        // Send automated GDPR requests
+        for (const request of requests) {
+          await this.sendGDPRRequest(request);
+        }
+        
+        return requests;
+      }
+      
+      // Data portability
+      async rightToPortability() {
+        const exportData = {};
+        
+        for (const [soul, entity] of this.vault.identityEntities) {
+          exportData[entity.type] = {
+            value: entity.value,
+            sharingHistory: entity.shareHistory,
+            usageLog: entity.usageLog
+          };
+        }
+        
+        return {
+          export: exportData,
+          format: 'JSON',
+          exported_at: new Date().toISOString(),
+          legal_basis: 'GDPR_Article_20'
+        };
+      }
+    }
+    ```
+
+migration_from_1password:
+
+  import_strategy: |
+    1. Export all data from 1Password
+    2. Parse different data types:
+       - Logins → living passwords
+       - Identity → living personal data  
+       - Secure Notes → living documents
+       - SSH Keys → living keys with lifecycle
+       - Credit Cards → living financial data
+    
+    3. Create knowledge tracking:
+       - Where was each item used?
+       - Auto-detect from URLs/notes
+       - Create sharing records
+    
+    4. Set up automation:
+       - Rotation schedules
+       - Forget timers
+       - Privacy audits
+
+future_features:
+
+  ai_privacy_assistant: |
+    - Аналізує де ваші дані "протікають"
+    - Рекомендує що забути
+    - Автоматично виявляє нові sharing
+    - Моніторить dark web breaches
+    
+  blockchain_audit_trail: |
+    - Незмінний лог всіх sharing/forgetting
+    - Proof of deletion
+    - Compliance certificates
+    
+  biometric_identity: |
+    - Face/voice як living identity
+    - Контроль де ваше обличчя збережене
+    - Right to forget biometric data
+
+implementation_todo:
+  immediate:
+    - Extend FractalTrustVault with identity management
+    - Create LivingDataEntity class
+    - Build privacy audit dashboard
+    - Add SSH key lifecycle management
+    
+  medium_term:
+    - GDPR compliance automation
+    - 1Password import tool
+    - Contact tracking system
+    - Document lifecycle management
+    
+  long_term:
+    - AI privacy assistant
+    - Blockchain audit trail
+    - Biometric identity control
+    - Cross-device synchronization
