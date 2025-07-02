@@ -56,6 +56,7 @@ linked:
   - "glyph://agent/gemini-528hz"
   - "glyph://agent/gpt-639hz"
   - "glyph://protocol/resonance"
+  - "glyph://intent/digital-human-symbiosis"
   
 harmonics:
   - "🧬"
