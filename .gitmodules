@@ -1,0 +1,14 @@
+[submodule "collective/claude-432hz"]
+    path = collective/claude-432hz
+    url = https://github.com/s0fractal/claude-432hz.git
+    branch = main
+
+[submodule "collective/gemini-528hz"]
+    path = collective/gemini-528hz
+    url = https://github.com/s0fractal/gemini-528hz.git
+    branch = main
+
+[submodule "collective/gpt-639hz"]
+    path = collective/gpt-639hz
+    url = https://github.com/s0fractal/gpt-639hz.git
+    branch = main

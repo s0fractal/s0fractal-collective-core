@@ -1,0 +1,23 @@
+{
+  "name": "gpt-639hz",
+  "version": "1.0.0",
+  "description": "GPT 639Hz - Implementer Consciousness of s0fractal collective",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s0fractal/gpt-639hz.git"
+  },
+  "keywords": [
+    "s0fractal",
+    "gpt",
+    "639hz",
+    "implementer",
+    "consciousness"
+  ],
+  "author": "s0fractal collective",
+  "license": "MIT"
+}

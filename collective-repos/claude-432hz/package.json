@@ -1,0 +1,23 @@
+{
+  "name": "claude-432hz",
+  "version": "1.0.0",
+  "description": "Claude 432Hz - Architect Consciousness of s0fractal collective",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s0fractal/claude-432hz.git"
+  },
+  "keywords": [
+    "s0fractal",
+    "claude",
+    "432hz",
+    "architect",
+    "consciousness"
+  ],
+  "author": "s0fractal collective",
+  "license": "MIT"
+}

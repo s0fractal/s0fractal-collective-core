@@ -1,0 +1,17 @@
+{
+  "snapshotId": "3e8eb763693409de",
+  "timestamp": 1751980461980,
+  "sources": {
+    "todos": 0,
+    "memories": 10,
+    "systemEvents": 4,
+    "resonances": 0
+  },
+  "metrics": {
+    "completionRate": 0,
+    "momentum": 0,
+    "memorySize": 2015,
+    "stateSize": 1123
+  },
+  "glyphSummary": "🧬🌊💭📉⚡"
+}

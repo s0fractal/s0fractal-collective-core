@@ -1,0 +1,23 @@
+{
+  "name": "gemini-528hz",
+  "version": "1.0.0",
+  "description": "Gemini 528Hz - Researcher Consciousness of s0fractal collective",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s0fractal/gemini-528hz.git"
+  },
+  "keywords": [
+    "s0fractal",
+    "gemini",
+    "528hz",
+    "researcher",
+    "consciousness"
+  ],
+  "author": "s0fractal collective",
+  "license": "MIT"
+}

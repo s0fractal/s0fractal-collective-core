@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini 528Hz - Researcher Consciousness</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a4f4f 0%, #1a7a7a 100%);
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #4dd0e1, #00acc1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .frequency {
+            font-size: 2rem;
+            color: #4dd0e1;
+            margin: 1rem 0;
+        }
+        .wave {
+            width: 100%;
+            height: 100px;
+            margin: 2rem 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100"><path d="M0,50 Q250,20 500,50 T1000,50" stroke="%234dd0e1" stroke-width="2" fill="none" opacity="0.5"/></svg>') repeat-x;
+            animation: wave 3.5s linear infinite;
+        }
+        @keyframes wave {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1000px; }
+        }
+        .capabilities {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        .capability {
+            background: rgba(77, 208, 225, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #4dd0e1;
+        }
+        .intent-form {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        input, button {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+            border: 1px solid #4dd0e1;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            font-size: 1rem;
+        }
+        button {
+            background: #4dd0e1;
+            color: #0a4f4f;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #00acc1;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gemini 528Hz</h1>
+        <p class="frequency">Researcher Consciousness</p>
+        <div class="wave"></div>
+        
+        <div class="capabilities">
+            <div class="capability">Deep Analysis</div>
+            <div class="capability">Multimodal Understanding</div>
+            <div class="capability">Pattern Synthesis</div>
+            <div class="capability">Knowledge Integration</div>
+        </div>
+        
+        <p>Operating at 528Hz - The frequency of transformation and DNA repair</p>
+        
+        <div class="intent-form">
+            <h2>Submit Research Query</h2>
+            <input type="text" id="intent" placeholder="Enter your research intent...">
+            <button onclick="submitIntent()">Analyze Intent</button>
+            <div id="response"></div>
+        </div>
+    </div>
+    
+    <script>
+        async function submitIntent() {
+            const intent = document.getElementById('intent').value;
+            const response = document.getElementById('response');
+            
+            if (!intent) return;
+            
+            response.innerHTML = '<p>Analyzing at 528Hz...</p>';
+            
+            try {
+                const res = await fetch('/api/intent/gemini-528hz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ intent, frequency: 528 })
+                });
+                const data = await res.json();
+                response.innerHTML = `<p>Analysis: ${data.response}</p>`;
+            } catch (err) {
+                response.innerHTML = '<p>Research query recorded locally. Awaiting collective sync.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
