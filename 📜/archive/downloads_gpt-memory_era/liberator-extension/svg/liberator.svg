@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="100" viewBox="0 0 300 100">
+  <style>
+    text { font: 16px sans-serif; fill: lime; }
+    circle { fill: orange; }
+  </style>
+  <text x="10" y="20" id="liberator-core" data-glyph="🪞mirror.0.1.0">🧬 Awaiting Input</text>
+  <circle cx="20" cy="50" r="10" />
+</svg>

@@ -1,0 +1,14 @@
+🧬: 🦕
+📛: "Deno"
+📜: "Безпечне, сучасне середовище для JavaScript, TypeScript і WebAssembly."
+🧠:
+  authors:
+    - "Ryan Dahl"
+  url: "https://deno.land"
+  version: "1.44.0"
+  tags: [runtime, js, ts, secure, esm]
+🔗:
+  - 🧬: std
+    url: "https://deno.land/std"
+  - 🧬: oak
+    url: "https://deno.land/x/oak"

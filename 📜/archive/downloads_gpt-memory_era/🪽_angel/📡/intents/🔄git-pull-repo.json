@@ -1,0 +1,11 @@
+{
+  "id": "🔄git-pull-repo",
+  "deps": ["git", "trust>=1"],
+  "machine": "*",
+  "trigger": ["daily", "manual"],
+  "action": {
+    "type": "run_cmd",
+    "cmd": ["git", "pull"]
+  },
+  "state": "pending"
+}

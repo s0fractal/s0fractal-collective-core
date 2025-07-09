@@ -1,0 +1,11 @@
+🌀: "run"
+📜: "Запускає Deno-скрипт з файла або URL"
+⚙️:
+  input:
+    - file: string
+    - args: string[]
+  output:
+    - result: string
+    - status: string
+🔧: |
+  deno run {{file}} {{args.join(' ')}}

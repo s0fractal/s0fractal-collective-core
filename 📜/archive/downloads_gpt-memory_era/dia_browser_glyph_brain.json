@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "created_on": "2025-07-01T20:33:51.494421Z",
+    "source": "diaBrowser_import",
+    "type": "resonance_bookmark_export",
+    "version": "0.1.0"
+  },
+  "entries": [
+    {
+      "title": "Example Page",
+      "url": "https://example.com",
+      "glyph": "\ud83c\udf10\ud83d\udcd6",
+      "tags": [
+        "bookmark",
+        "reference",
+        "imported"
+      ],
+      "resonance": "neutral",
+      "visited_at": "2025-06-30T15:42:00Z",
+      "note": "Imported from diaBrowser"
+    }
+  ]
+}

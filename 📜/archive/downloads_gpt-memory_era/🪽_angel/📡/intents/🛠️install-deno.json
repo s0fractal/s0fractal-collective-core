@@ -1,0 +1,11 @@
+{
+  "id": "🛠️install-deno",
+  "deps": ["brew", "trust>=2"],
+  "machine": "*",
+  "trigger": ["push", "manual", "boot"],
+  "action": {
+    "type": "run_script",
+    "script": "🧠/install-deno.ts"
+  },
+  "state": "pending"
+}

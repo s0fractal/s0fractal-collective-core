@@ -1,0 +1,9 @@
+glyph: "🧭"
+title: "Фрактальний Компас"
+resonance: "direction"
+actions:
+  - onClick: "/action/focus"
+    label: "Сфокусувати"
+  - onHover: "🫧 Підказка: Це компас"
+linked:
+  - "glyph://⟁serce"

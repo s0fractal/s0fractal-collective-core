@@ -1,0 +1,6 @@
+{
+  "lintRules": {
+    "requireIntent": true,
+    "requireWhy": true
+  }
+}

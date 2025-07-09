@@ -1,0 +1,3 @@
+#!/bin/bash
+# telegram-agent → listen🌀
+echo "🌀 telegram-agent активовано."

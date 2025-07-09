@@ -1,0 +1,11 @@
+{
+  "id": "🌀sync-profile@chaoshex",
+  "deps": ["trust>=2", "profile:chaoshex"],
+  "machine": "chaoshex",
+  "trigger": ["schedule", "manual"],
+  "action": {
+    "type": "sync_profile",
+    "profile": "chaoshex"
+  },
+  "state": "pending"
+}

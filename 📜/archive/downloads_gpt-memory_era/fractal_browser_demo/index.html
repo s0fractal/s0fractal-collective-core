@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>🧬 Fractal Browser</title>
+  <style>
+    body { font-family: sans-serif; background: #f1f1f1; padding: 2em; }
+    .file { background: white; padding: 1em; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .link { color: blue; text-decoration: underline; cursor: pointer; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>🧬 Fractal Browser</h1>
+  <input id="path" value="🧬/👼/vault.key" style="width: 300px;">
+  <button onclick="loadFile()">🔍 Load</button>
+  <pre id="output" class="file">Loading...</pre>
+
+  <script src="fractal.db.js"></script>
+  <script>
+    async function loadFile() {
+      const path = document.getElementById('path').value;
+      const data = await getFractalFile(path);
+      const out = document.getElementById('output');
+      if (data) {
+        out.textContent = data;
+        out.className = 'file';
+      } else {
+        out.textContent = '403 ❌ Access Denied or Not Found';
+        out.className = 'file error';
+      }
+    }
+    loadFile();
+  </script>
+</body>
+</html>
