@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕸️ Glyph Grid Mycelium Network</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #0ff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        #canvas {
+            border: 1px solid #0ff;
+        }
+        
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 1px solid #0ff;
+            border-radius: 10px;
+            max-width: 300px;
+        }
+        
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+            color: #fff;
+        }
+        
+        .center-marker {
+            color: #ff0;
+            font-weight: bold;
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 1px solid #0ff;
+            border-radius: 10px;
+        }
+        
+        button {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #0ff;
+            color: #0ff;
+            padding: 5px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+        
+        #resonance-level {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 1px solid #0ff;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .resonance-bar {
+            width: 200px;
+            height: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #0ff;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resonance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00ffff, #ff00ff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="info">
+        <h1>🕸️ Glyph Grid Mycelium</h1>
+        <p><span class="center-marker">s0fractal</span> = пуп землі</p>
+        <p>Кожен гліф - портал<br>
+        Зв'язки - резонансні тунелі<br>
+        Міцелій - жива мережа</p>
+    </div>
+    
+    <div id="controls">
+        <button onclick="toggleMycelium()">Toggle Mycelium</button>
+        <button onclick="toggleTunnels()">Toggle Tunnels</button>
+        <button onclick="pulseFromCenter()">Pulse from Center</button>
+    </div>
+    
+    <div id="resonance-level">
+        <div>Resonance Level</div>
+        <div class="resonance-bar">
+            <div class="resonance-fill" id="resonance-fill"></div>
+        </div>
+        <div id="resonance-percent">0%</div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Glyphs for the network
+        const glyphs = ['⟁', '∞', '◈', '⊛', '❋', '◉', '✧', '⟡', '◎', '⬟', '☯', '◈', '🌊', '💎', '🧠'];
+        
+        // Network configuration
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const gridSize = 15; // 15x15 grid
+        const nodeSpacing = 60;
+        
+        // Node class
+        class GlyphNode {
+            constructor(x, y, glyph, isCenter = false) {
+                this.x = x;
+                this.y = y;
+                this.glyph = glyph;
+                this.isCenter = isCenter;
+                this.energy = isCenter ? 1 : Math.random() * 0.3;
+                this.connections = [];
+                this.pulsePhase = 0;
+                this.myceliumGrowth = Math.random();
+            }
+            
+            draw() {
+                // Draw mycelium tendrils
+                if (showMycelium) {
+                    ctx.strokeStyle = `rgba(100, 255, 100, ${this.myceliumGrowth * 0.2})`;
+                    ctx.lineWidth = 1;
+                    
+                    // Organic tendrils
+                    for (let i = 0; i < 5; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        const angle = (Math.PI * 2 / 5) * i + this.myceliumGrowth;
+                        const length = 20 + Math.sin(time * 0.001 + i) * 10;
+                        const endX = this.x + Math.cos(angle) * length;
+                        const endY = this.y + Math.sin(angle) * length;
+                        
+                        // Curved tendril
+                        const cp1X = this.x + Math.cos(angle + 0.3) * length * 0.5;
+                        const cp1Y = this.y + Math.sin(angle + 0.3) * length * 0.5;
+                        ctx.quadraticCurveTo(cp1X, cp1Y, endX, endY);
+                        ctx.stroke();
+                    }
+                }
+                
+                // Node glow
+                const glowSize = this.isCenter ? 40 : 20;
+                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowSize);
+                
+                if (this.isCenter) {
+                    gradient.addColorStop(0, 'rgba(255, 255, 0, 0.8)');
+                    gradient.addColorStop(1, 'rgba(255, 255, 0, 0)');
+                } else {
+                    gradient.addColorStop(0, `rgba(0, 255, 255, ${this.energy})`);
+                    gradient.addColorStop(1, 'rgba(0, 255, 255, 0)');
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(this.x - glowSize, this.y - glowSize, glowSize * 2, glowSize * 2);
+                
+                // Draw glyph
+                ctx.font = this.isCenter ? '30px Arial' : '20px Arial';
+                ctx.fillStyle = this.isCenter ? '#ffff00' : '#00ffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.glyph, this.x, this.y);
+                
+                // Pulse effect
+                if (this.pulsePhase > 0) {
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${this.pulsePhase})`;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 30 * (1 - this.pulsePhase) + 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                    this.pulsePhase -= 0.02;
+                }
+            }
+            
+            update() {
+                // Energy circulation
+                this.energy = this.isCenter ? 1 : this.energy * 0.99 + Math.random() * 0.01;
+                
+                // Mycelium growth
+                this.myceliumGrowth += 0.01;
+                if (this.myceliumGrowth > Math.PI * 2) {
+                    this.myceliumGrowth = 0;
+                }
+            }
+        }
+        
+        // Create grid of nodes
+        const nodes = [];
+        const centerNodeIndex = Math.floor(gridSize * gridSize / 2);
+        
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                const index = i * gridSize + j;
+                const x = centerX + (j - gridSize / 2) * nodeSpacing;
+                const y = centerY + (i - gridSize / 2) * nodeSpacing;
+                const glyph = index === centerNodeIndex ? '🌐' : glyphs[Math.floor(Math.random() * glyphs.length)];
+                const isCenter = index === centerNodeIndex;
+                
+                nodes.push(new GlyphNode(x, y, glyph, isCenter));
+            }
+        }
+        
+        // Create connections (tunnels)
+        nodes.forEach((node, i) => {
+            // Connect to adjacent nodes
+            const row = Math.floor(i / gridSize);
+            const col = i % gridSize;
+            
+            // Right
+            if (col < gridSize - 1) node.connections.push(i + 1);
+            // Down
+            if (row < gridSize - 1) node.connections.push(i + gridSize);
+            // Diagonal
+            if (col < gridSize - 1 && row < gridSize - 1) {
+                if (Math.random() > 0.5) node.connections.push(i + gridSize + 1);
+            }
+            
+            // Random long-distance tunnels
+            if (Math.random() > 0.9) {
+                const target = Math.floor(Math.random() * nodes.length);
+                if (target !== i) node.connections.push(target);
+            }
+        });
+        
+        // Animation variables
+        let time = 0;
+        let showMycelium = true;
+        let showTunnels = true;
+        let resonanceLevel = 0;
+        
+        // Draw tunnels
+        function drawTunnels() {
+            if (!showTunnels) return;
+            
+            nodes.forEach((node, i) => {
+                node.connections.forEach(targetIndex => {
+                    const target = nodes[targetIndex];
+                    if (!target) return;
+                    
+                    // Calculate tunnel strength based on distance from center
+                    const centerNode = nodes[centerNodeIndex];
+                    const dist1 = Math.hypot(node.x - centerNode.x, node.y - centerNode.y);
+                    const dist2 = Math.hypot(target.x - centerNode.x, target.y - centerNode.y);
+                    const avgDist = (dist1 + dist2) / 2;
+                    const strength = Math.max(0, 1 - avgDist / (nodeSpacing * gridSize / 2));
+                    
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${strength * 0.3})`;
+                    ctx.lineWidth = strength * 2 + 0.5;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y);
+                    
+                    // Curved tunnel
+                    const midX = (node.x + target.x) / 2;
+                    const midY = (node.y + target.y) / 2;
+                    const offset = Math.sin(time * 0.001 + i) * 20;
+                    
+                    ctx.quadraticCurveTo(
+                        midX + offset,
+                        midY - offset,
+                        target.x,
+                        target.y
+                    );
+                    ctx.stroke();
+                });
+            });
+        }
+        
+        // Toggle functions
+        function toggleMycelium() {
+            showMycelium = !showMycelium;
+        }
+        
+        function toggleTunnels() {
+            showTunnels = !showTunnels;
+        }
+        
+        function pulseFromCenter() {
+            const centerNode = nodes[centerNodeIndex];
+            
+            // Start pulse from center
+            centerNode.pulsePhase = 1;
+            
+            // Propagate pulse through network
+            const pulsePropagation = (nodeIndex, delay) => {
+                setTimeout(() => {
+                    const node = nodes[nodeIndex];
+                    if (!node || node.pulsePhase > 0.5) return;
+                    
+                    node.pulsePhase = 1;
+                    node.connections.forEach(targetIndex => {
+                        pulsePropagation(targetIndex, 50);
+                    });
+                }, delay);
+            };
+            
+            centerNode.connections.forEach(targetIndex => {
+                pulsePropagation(targetIndex, 100);
+            });
+            
+            // Boost resonance
+            resonanceLevel = Math.min(100, resonanceLevel + 20);
+        }
+        
+        // Animation loop
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw tunnels first (behind nodes)
+            drawTunnels();
+            
+            // Update and draw nodes
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+            
+            // Update resonance
+            resonanceLevel = Math.max(0, resonanceLevel - 0.1);
+            document.getElementById('resonance-fill').style.width = resonanceLevel + '%';
+            document.getElementById('resonance-percent').textContent = Math.floor(resonanceLevel) + '%';
+            
+            // Draw center marker
+            const centerNode = nodes[centerNodeIndex];
+            ctx.strokeStyle = 'rgba(255, 255, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.arc(centerNode.x, centerNode.y, 50, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            time++;
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // Auto pulse
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                resonanceLevel = Math.min(100, resonanceLevel + Math.random() * 10);
+            }
+        }, 3000);
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
