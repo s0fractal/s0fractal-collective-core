@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+
+# Archives and raw exports
+💾/
+*/💾/
+**/💾/
+
+# Temporary files
+*.tmp
+*.bak
+
+# Private/sensitive
+.env
+*.private
