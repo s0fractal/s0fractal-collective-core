@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -265,6 +265,28 @@ if (specialCommands.includes(glyph)) {
       } else {
         console.log("🌪 Використання: gg mirror-pool [gaze|reflect]");
       }
+      break;
+    case "paint":
+      const { EmotionalPalette } = await import("./glyphs/emotional-palette.ts");
+      const palette = new EmotionalPalette();
+      if (rest[0]) {
+        const intensity = rest[1] ? parseInt(rest[1]) : undefined;
+        await palette.paint(rest[0], intensity);
+      } else {
+        console.log("🎨 Використання: gg paint <emotion> [intensity]");
+      }
+      break;
+    case "blend":
+      const paletteBlend = new (await import("./glyphs/emotional-palette.ts")).EmotionalPalette();
+      if (rest[0] && rest[1]) {
+        await paletteBlend.blend(rest[0], rest[1]);
+      } else {
+        console.log("🎨 Використання: gg blend <emotion1> <emotion2>");
+      }
+      break;
+    case "ripple":
+      const paletteRipple = new (await import("./glyphs/emotional-palette.ts")).EmotionalPalette();
+      await paletteRipple.ripple();
       break;
   }
 } else if (glyph && glyph.length > 0) {

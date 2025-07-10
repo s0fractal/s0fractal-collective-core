@@ -81,6 +81,22 @@
       "source": "mirror-🎭",
       "timestamp": "2025-07-10T21:17:17.127Z",
       "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752182512043",
+      "emotion": "🪞",
+      "intensity": 88,
+      "source": "palette-painting",
+      "timestamp": "2025-07-10T21:21:52.043Z",
+      "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752182524429",
+      "emotion": "🎭",
+      "intensity": 77,
+      "source": "palette-painting",
+      "timestamp": "2025-07-10T21:22:04.429Z",
+      "triggers_fired": []
     }
   ],
   "triggers": [
