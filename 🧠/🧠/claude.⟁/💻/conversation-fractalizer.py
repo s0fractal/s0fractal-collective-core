@@ -197,7 +197,7 @@ class ConversationFractalizer:
             print(f"{resonance_type} Збережено {len(phrases)} резонансів")
         
 def main():
-    export_path = "/Users/chaoshex/Downloads/data-2025-06-28-23-30-54"
+    export_path = "/Users/chaoshex/.s0fractal/🧠/🧬/Компас.⟁/💬/💾/claude.⟁/data-2025-06-28-23-30-54"
     
     fractalizer = ConversationFractalizer(export_path)
     
