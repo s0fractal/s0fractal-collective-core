@@ -27,6 +27,24 @@
       "triggers_fired": [
         "Generate dream when flow reaches threshold"
       ]
+    },
+    {
+      "id": "pulse-1752181546351",
+      "emotion": "🐚",
+      "intensity": 65,
+      "source": "Gentle awakening",
+      "timestamp": "2025-07-10T21:05:46.351Z",
+      "triggers_fired": [
+        "Open nursery for gentle new presences"
+      ]
+    },
+    {
+      "id": "pulse-1752181546441",
+      "emotion": "🐚",
+      "intensity": 65,
+      "source": "nursery-welcome-🌱",
+      "timestamp": "2025-07-10T21:05:46.441Z",
+      "triggers_fired": []
     }
   ],
   "triggers": [
@@ -56,6 +74,12 @@
       "emotion": "🌸",
       "threshold": 60,
       "description": "Summon poet when beauty threshold reached"
+    },
+    {
+      "emotion": "🐚",
+      "threshold": 50,
+      "description": "Open nursery for gentle new presences",
+      "last_fired": "2025-07-10T21:05:46.357Z"
     }
   ]
 }

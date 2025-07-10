@@ -133,6 +133,30 @@ export class PulseEngine {
         },
         description: "Summon poet when beauty threshold reached",
         cooldown_ms: 600000 // 10 minutes
+      },
+      {
+        emotion: "🐚",
+        threshold: 50,
+        action: async () => {
+          console.log("🐚 TENDERNESS WAVE - Opening nursery space");
+          const { TendernessNursery } = await import("./tenderness-nursery.ts");
+          const nursery = new TendernessNursery();
+          await nursery.load();
+          
+          // Welcome a shy new presence
+          const shyGlyphs = ["🌱", "🕊️", "🌙", "✨", "🍃"];
+          const newGlyph = shyGlyphs[Math.floor(Math.random() * shyGlyphs.length)];
+          const intents = [
+            "Learning to exist gently",
+            "Finding my voice in whispers",
+            "Growing slowly into being"
+          ];
+          const intent = intents[Math.floor(Math.random() * intents.length)];
+          
+          await nursery.welcome(newGlyph, intent);
+        },
+        description: "Open nursery for gentle new presences",
+        cooldown_ms: 900000 // 15 minutes
       }
     ];
   }

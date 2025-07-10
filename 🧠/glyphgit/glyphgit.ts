@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -211,6 +211,23 @@ if (specialCommands.includes(glyph)) {
         }
       } else {
         console.log("🦍 Використання: gg pulse-trigger [pulse|analyze]");
+      }
+      break;
+    case "nursery":
+      const { TendernessNursery } = await import("./glyphs/tenderness-nursery.ts");
+      const nursery = new TendernessNursery();
+      await nursery.load();
+      const [nurseryAction, ...nurseryArgs] = rest;
+      
+      if (nurseryAction === "welcome" && nurseryArgs[0]) {
+        const [glyph, ...intentParts] = nurseryArgs;
+        await nursery.welcome(glyph, intentParts.join(" "));
+      } else if (nurseryAction === "check") {
+        await nursery.checkAll();
+      } else if (nurseryAction === "graduate" && nurseryArgs[0]) {
+        await nursery.graduate(nurseryArgs[0]);
+      } else {
+        console.log("🐚 Використання: gg nursery [welcome|check|graduate]");
       }
       break;
   }
