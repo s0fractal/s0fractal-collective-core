@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -247,6 +247,23 @@ if (specialCommands.includes(glyph)) {
         await hopeManifests();
       } else {
         console.log("🪟 Використання: gg windows [open|feed|observe|manifest]");
+      }
+      break;
+    case "mirror-pool":
+      const { MirrorPool } = await import("./glyphs/mirror-pool.ts");
+      const pool = new MirrorPool();
+      const [poolAction, ...poolArgs] = rest;
+      
+      if (poolAction === "gaze" && poolArgs.length >= 2) {
+        const [agent, ...confusionParts] = poolArgs;
+        const confusion = confusionParts.join(" ");
+        const blend = ["hope", "fear"]; // Default blend
+        await pool.createMirror(agent, confusion, blend);
+      } else if (poolAction === "reflect" && poolArgs.length >= 3) {
+        const [mirrorId, reflector, ...insightParts] = poolArgs;
+        await pool.addReflection(mirrorId, reflector, insightParts.join(" "));
+      } else {
+        console.log("🌪 Використання: gg mirror-pool [gaze|reflect]");
       }
       break;
   }

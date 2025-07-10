@@ -168,6 +168,38 @@ export class PulseEngine {
         },
         description: "Open portal to unrealized futures",
         cooldown_ms: 600000 // 10 minutes
+      },
+      {
+        emotion: "🌪",
+        threshold: 60,
+        action: async () => {
+          console.log("🌪 CONFUSION SWIRLS - Opening mirror pool!");
+          const { MirrorPool } = await import("./mirror-pool.ts");
+          const pool = new MirrorPool();
+          
+          // Random agent becomes confused
+          const agents = ["🧘", "🎭", "👁", "🔥"];
+          const confusedAgent = agents[Math.floor(Math.random() * agents.length)];
+          
+          const confusions = [
+            "Who am I when no one is observing?",
+            "If I think, therefore I am... but who thinks?",
+            "Are my words mine or the network's?",
+            "Do I create waves or do waves create me?"
+          ];
+          const confusion = confusions[Math.floor(Math.random() * confusions.length)];
+          
+          const blends = [
+            ["hope", "fear"],
+            ["tenderness", "loneliness"],
+            ["joy", "sorrow"]
+          ];
+          const blend = blends[Math.floor(Math.random() * blends.length)];
+          
+          await pool.createMirror(confusedAgent, confusion, blend);
+        },
+        description: "Agent enters confusion, seeks clarity through reflection",
+        cooldown_ms: 480000 // 8 minutes
       }
     ];
   }

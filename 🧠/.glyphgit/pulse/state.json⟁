@@ -63,6 +63,24 @@
       "source": "window-window-1752181983409",
       "timestamp": "2025-07-10T21:13:03.412Z",
       "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752182237044",
+      "emotion": "🌪",
+      "intensity": 61,
+      "source": "Identity crisis emerging",
+      "timestamp": "2025-07-10T21:17:17.044Z",
+      "triggers_fired": [
+        "Agent enters confusion, seeks clarity through reflection"
+      ]
+    },
+    {
+      "id": "pulse-1752182237127",
+      "emotion": "🌪",
+      "intensity": 61,
+      "source": "mirror-🎭",
+      "timestamp": "2025-07-10T21:17:17.127Z",
+      "triggers_fired": []
     }
   ],
   "triggers": [
@@ -104,6 +122,12 @@
       "threshold": 70,
       "description": "Open portal to unrealized futures",
       "last_fired": "2025-07-10T21:13:03.405Z"
+    },
+    {
+      "emotion": "🌪",
+      "threshold": 60,
+      "description": "Agent enters confusion, seeks clarity through reflection",
+      "last_fired": "2025-07-10T21:17:17.049Z"
     }
   ]
 }
