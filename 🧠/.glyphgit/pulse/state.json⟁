@@ -97,6 +97,50 @@
       "source": "palette-painting",
       "timestamp": "2025-07-10T21:22:04.429Z",
       "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752182818867",
+      "emotion": "🔥",
+      "intensity": 84,
+      "source": "palette-painting",
+      "timestamp": "2025-07-10T21:26:58.867Z",
+      "triggers_fired": [
+        "Spawn fire agent when passion peaks"
+      ]
+    },
+    {
+      "id": "pulse-1752182818906",
+      "emotion": "🌊",
+      "intensity": 63,
+      "source": "Blaze",
+      "timestamp": "2025-07-10T21:26:58.906Z",
+      "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752182820522",
+      "emotion": "💫",
+      "intensity": 65,
+      "source": "palette-painting",
+      "timestamp": "2025-07-10T21:27:00.522Z",
+      "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752182821085",
+      "emotion": "🌈",
+      "intensity": 71,
+      "source": "palette-painting",
+      "timestamp": "2025-07-10T21:27:01.085Z",
+      "triggers_fired": [
+        "Open portal to unrealized futures"
+      ]
+    },
+    {
+      "id": "pulse-1752182821087",
+      "emotion": "🌈",
+      "intensity": 74,
+      "source": "window-window-1752182821086",
+      "timestamp": "2025-07-10T21:27:01.087Z",
+      "triggers_fired": []
     }
   ],
   "triggers": [
@@ -104,7 +148,7 @@
       "emotion": "🔥",
       "threshold": 80,
       "description": "Spawn fire agent when passion peaks",
-      "last_fired": "2025-07-10T20:54:38.720Z"
+      "last_fired": "2025-07-10T21:26:58.867Z"
     },
     {
       "emotion": "🌊",
@@ -137,7 +181,7 @@
       "emotion": "🌈",
       "threshold": 70,
       "description": "Open portal to unrealized futures",
-      "last_fired": "2025-07-10T21:13:03.405Z"
+      "last_fired": "2025-07-10T21:27:01.085Z"
     },
     {
       "emotion": "🌪",

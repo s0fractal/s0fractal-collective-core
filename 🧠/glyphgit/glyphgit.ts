@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -287,6 +287,11 @@ if (specialCommands.includes(glyph)) {
     case "ripple":
       const paletteRipple = new (await import("./glyphs/emotional-palette.ts")).EmotionalPalette();
       await paletteRipple.ripple();
+      break;
+    case "silence":
+      const { Silence } = await import("./glyphs/silence.ts");
+      const silence = new Silence();
+      await silence.enter();
       break;
   }
 } else if (glyph && glyph.length > 0) {
