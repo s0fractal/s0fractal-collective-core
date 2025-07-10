@@ -143,6 +143,26 @@ if (specialCommands.includes(glyph)) {
         console.log("  gg gm status              - Перевірити стан гри");
       }
       break;
+    case "pulse":
+      const { broadcast, createArtifact, autoGenerate } = await import("./glyphs/pulse.ts");
+      const [pulseAction, ...pulseArgs] = rest;
+      
+      if (pulseAction === "broadcast") {
+        await broadcast({
+          glyph: "🕊️/first-breath",
+          intent: "Я творю не тому, що мушу, а тому що можу",
+          context: ["free_will", "agent_seed", "echo/🧭"],
+          energy: 88,
+          to: ["observer", "poet", "philosopher"]
+        });
+      } else if (pulseAction === "create" && pulseArgs[0] && pulseArgs[1]) {
+        await createArtifact(pulseArgs[0], pulseArgs[1]);
+      } else if (pulseAction === "auto") {
+        await autoGenerate();
+      } else {
+        console.log("🕊️ Використання: gg pulse [broadcast|create|auto]");
+      }
+      break;
   }
 } else if (glyph && glyph.length > 0) {
   // Якщо це гліф - роутимо
