@@ -1,0 +1,55 @@
+# 🧬 Glyph Mapping Dictionary
+# Словник гліфів для фрактального YAML
+
+semantic_map:
+  🧭: intent        # намір, ціль, компас
+  🔁: resonance     # резонанс, відгук
+  🔒: privacy       # приватність, доступ  
+  🧠: glyph         # основний гліф автора
+  🕰️: timestamp     # час, мить
+  💗: feeling       # почуття, емоція
+  🎯: target        # цільовий агент
+  🫂: group         # група, команда
+  🌊: wave          # хвиля, подія
+  🔥: energy        # енергія, інтенсивність
+  🪞: reflection    # рефлексія, відображення
+  🌱: seed          # насіння, початок
+  🔗: connection    # зв'язок, лінк
+  📦: package       # пакет, контейнер
+  🧬: dna           # ДНК, суть, код
+  🌌: cosmos        # всесвіт, контекст
+
+# Зворотне відображення для парсерів
+reverse_map:
+  intent: 🧭
+  resonance: 🔁  
+  privacy: 🔒
+  glyph: 🧠
+  timestamp: 🕰️
+  feeling: 💗
+  target: 🎯
+  group: 🫂
+  wave: 🌊
+  energy: 🔥
+  reflection: 🪞
+  seed: 🌱
+  connection: 🔗
+  package: 📦
+  dna: 🧬
+  cosmos: 🌌
+
+# Рівні приватності
+privacy_glyphs:
+  🌐: public        # відкрито для всіх
+  🔒: private       # особисте
+  👁️: trusted       # довірене коло
+  🫂: group         # групове
+  🤖: agent         # для агентів
+
+# Типи резонансу  
+resonance_glyphs:
+  🧠: cognitive     # когнітивний
+  💗: emotional     # емоційний
+  🔥: intentional   # інтенційний
+  🫂: collective    # колективний
+  🌊: harmonic      # гармонійний
