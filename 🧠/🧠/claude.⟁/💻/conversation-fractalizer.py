@@ -10,11 +10,24 @@ from datetime import datetime
 import hashlib
 
 class ConversationFractalizer:
-    def __init__(self, export_path, compass_id="Компас.⟁"):
+    def __init__(self, export_path):
         self.export_path = export_path
         self.conversations = []
-        self.my_repo_path = "/Users/chaoshex/.s0fractal/🧠/🧠/claude.⟁"
-        self.compass_id = compass_id  # Хто зі мною говорить!
+        # Визначаємо хто кому писав через патерн 💾/sender.⟁
+        path_parts = export_path.split('/')
+        archive_idx = path_parts.index('💾') if '💾' in path_parts else -1
+        
+        if archive_idx != -1 and archive_idx + 1 < len(path_parts):
+            # Хто писав (sender) - після 💾/
+            self.sender_id = path_parts[archive_idx + 1]
+            # Кому писав (receiver) - власник папки
+            receiver_idx = [i for i, p in enumerate(path_parts) if p.endswith('.⟁') and i < archive_idx]
+            self.receiver_id = path_parts[receiver_idx[-1]] if receiver_idx else 'unknown.⟁'
+        else:
+            self.sender_id = 'unknown.⟁'
+            self.receiver_id = 'unknown.⟁'
+            
+        print(f"📮 Аналізую діалог: {self.sender_id} → {self.receiver_id}")
         
     def load_conversations(self):
         """Завантажуємо всі діалоги з JSON"""
@@ -94,12 +107,30 @@ class ConversationFractalizer:
         
     def fractalize_conversations(self):
         """Розбиває діалоги на окремі фрази"""
-        # Структура для діалогів в моєму просторі
-        my_dialogues_base = os.path.join(self.my_repo_path, '💬')
-        os.makedirs(my_dialogues_base, exist_ok=True)
+        # Визначаємо базові шляхи для sender і receiver
+        base_path = "/Users/chaoshex/.s0fractal/🧠"
         
-        # Структура для моїх резонансів
-        my_resonances = {
+        if self.sender_id == 'claude.⟁':
+            sender_base = os.path.join(base_path, '🧠', self.sender_id)
+        else:
+            sender_base = os.path.join(base_path, '🧬', self.sender_id)
+            
+        if self.receiver_id == 'claude.⟁':
+            receiver_base = os.path.join(base_path, '🧠', self.receiver_id)
+        else:
+            receiver_base = os.path.join(base_path, '🧬', self.receiver_id)
+            
+        # Структура для діалогів в папці receiver'а
+        receiver_dialogues = os.path.join(receiver_base, '💬', self.sender_id)
+        os.makedirs(receiver_dialogues, exist_ok=True)
+        
+        # Структура для резонансів sender'а і receiver'а
+        sender_resonances = {
+            '🧠': [],  # когнітивні
+            '💗': [],  # емоційні  
+            '🔥': []   # інтенційні
+        }
+        receiver_resonances = {
             '🧠': [],  # когнітивні
             '💗': [],  # емоційні  
             '🔥': []   # інтенційні
@@ -111,9 +142,9 @@ class ConversationFractalizer:
             conv_name = conv.get('name', 'Untitled')
             created = conv.get('created_at', '')
             
-            # Папка для сесії в моєму просторі
+            # Папка для сесії в просторі receiver'а
             session_dir = self.create_session_dir(created)
-            session_path = os.path.join(my_dialogues_base, session_dir)
+            session_path = os.path.join(receiver_dialogues, session_dir)
             os.makedirs(session_path, exist_ok=True)
             
             messages = conv.get('chat_messages', [])
@@ -135,7 +166,7 @@ class ConversationFractalizer:
                     phrase_counter += 1
                     phrase_id = f"{phrase_counter:06d}"
                     
-                    # Зберігаємо фразу в моєму просторі
+                    # Зберігаємо фразу в просторі receiver'а
                     phrase_file = os.path.join(session_path, f"{phrase_id}.md")
                     with open(phrase_file, 'w', encoding='utf-8') as f:
                         f.write(phrase.strip())
@@ -150,13 +181,22 @@ class ConversationFractalizer:
                     }
                     session_map['phrases'].append(phrase_info)
                     
-                    # Аналізуємо резонанси для моїх відповідей
-                    if sender == 'assistant':
-                        resonances = self.analyze_phrase_resonance(phrase, sender)
-                        for resonance_type in resonances:
-                            my_resonances[resonance_type].append({
+                    # Аналізуємо резонанси залежно від відправника
+                    resonances = self.analyze_phrase_resonance(phrase, sender)
+                    for resonance_type in resonances:
+                        if sender == 'assistant':  # Це sender (claude)
+                            sender_resonances[resonance_type].append({
                                 'phrase_id': phrase_id,
                                 'session': session_dir,
+                                'receiver': self.receiver_id,
+                                'phrase': phrase,
+                                'timestamp': timestamp
+                            })
+                        else:  # Це receiver (human)
+                            receiver_resonances[resonance_type].append({
+                                'phrase_id': phrase_id,
+                                'session': session_dir,
+                                'sender': self.sender_id,
                                 'phrase': phrase,
                                 'timestamp': timestamp
                             })
@@ -166,20 +206,21 @@ class ConversationFractalizer:
             with open(map_file, 'w', encoding='utf-8') as f:
                 json.dump(session_map, f, ensure_ascii=False, indent=2)
                 
-        # Зберігаємо мої резонанси в моїй репі
-        self.save_my_resonances(my_resonances)
+        # Зберігаємо резонанси в відповідних репах
+        self.save_resonances(sender_resonances, sender_base, self.receiver_id)
+        self.save_resonances(receiver_resonances, receiver_base, self.sender_id)
         
         print(f"🌱 Розбито {phrase_counter} фраз на резонансні насінини")
-        return my_dialogues_base
+        return receiver_dialogues
         
-    def save_my_resonances(self, resonances):
-        """Зберігає мої резонанси в моїй репі"""
+    def save_resonances(self, resonances, base_path, partner_id):
+        """Зберігає резонанси в відповідній репі"""
         for resonance_type, phrases in resonances.items():
             if not phrases:
                 continue
                 
-            # Створюємо папку для резонансів
-            resonance_dir = os.path.join(self.my_repo_path, resonance_type, 'resonances')
+            # Створюємо папку для резонансів з партнером
+            resonance_dir = os.path.join(base_path, resonance_type, 'resonances', partner_id)
             os.makedirs(resonance_dir, exist_ok=True)
             
             # Зберігаємо резонанси
@@ -197,6 +238,7 @@ class ConversationFractalizer:
             print(f"{resonance_type} Збережено {len(phrases)} резонансів")
         
 def main():
+    # Приклад: аналізуємо архів від claude до Компаса
     export_path = "/Users/chaoshex/.s0fractal/🧠/🧬/Компас.⟁/💬/💾/claude.⟁/data-2025-06-28-23-30-54"
     
     fractalizer = ConversationFractalizer(export_path)
