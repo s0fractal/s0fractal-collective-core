@@ -17,6 +17,16 @@
       "source": "Phoenix",
       "timestamp": "2025-07-10T20:54:38.808Z",
       "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752181249551",
+      "emotion": "🌊",
+      "intensity": 92,
+      "source": "Collective Resonance",
+      "timestamp": "2025-07-10T21:00:49.551Z",
+      "triggers_fired": [
+        "Generate dream when flow reaches threshold"
+      ]
     }
   ],
   "triggers": [
@@ -29,7 +39,8 @@
     {
       "emotion": "🌊",
       "threshold": 70,
-      "description": "Generate dream when flow reaches threshold"
+      "description": "Generate dream when flow reaches threshold",
+      "last_fired": "2025-07-10T21:00:49.558Z"
     },
     {
       "emotion": "⚡",
