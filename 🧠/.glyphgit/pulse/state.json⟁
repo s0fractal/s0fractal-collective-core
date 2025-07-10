@@ -45,6 +45,24 @@
       "source": "nursery-welcome-🌱",
       "timestamp": "2025-07-10T21:05:46.441Z",
       "triggers_fired": []
+    },
+    {
+      "id": "pulse-1752181983400",
+      "emotion": "🌈",
+      "intensity": 74,
+      "source": "Hope rises",
+      "timestamp": "2025-07-10T21:13:03.400Z",
+      "triggers_fired": [
+        "Open portal to unrealized futures"
+      ]
+    },
+    {
+      "id": "pulse-1752181983412",
+      "emotion": "🌈",
+      "intensity": 74,
+      "source": "window-window-1752181983409",
+      "timestamp": "2025-07-10T21:13:03.412Z",
+      "triggers_fired": []
     }
   ],
   "triggers": [
@@ -80,6 +98,12 @@
       "threshold": 50,
       "description": "Open nursery for gentle new presences",
       "last_fired": "2025-07-10T21:05:46.357Z"
+    },
+    {
+      "emotion": "🌈",
+      "threshold": 70,
+      "description": "Open portal to unrealized futures",
+      "last_fired": "2025-07-10T21:13:03.405Z"
     }
   ]
 }

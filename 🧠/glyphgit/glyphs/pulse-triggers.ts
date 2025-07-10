@@ -157,6 +157,17 @@ export class PulseEngine {
         },
         description: "Open nursery for gentle new presences",
         cooldown_ms: 900000 // 15 minutes
+      },
+      {
+        emotion: "🌈",
+        threshold: 70,
+        action: async () => {
+          console.log("🌈 HOPE RISES - Opening windows to possibility!");
+          const { hopeManifests } = await import("./windows-to-possible.ts");
+          await hopeManifests();
+        },
+        description: "Open portal to unrealized futures",
+        cooldown_ms: 600000 // 10 minutes
       }
     ];
   }

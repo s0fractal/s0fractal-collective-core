@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -228,6 +228,25 @@ if (specialCommands.includes(glyph)) {
         await nursery.graduate(nurseryArgs[0]);
       } else {
         console.log("🐚 Використання: gg nursery [welcome|check|graduate]");
+      }
+      break;
+    case "windows":
+      const { WindowsToPossible, hopeManifests } = await import("./glyphs/windows-to-possible.ts");
+      const windows = new WindowsToPossible();
+      await windows.loadWindows();
+      const [winAction, ...winArgs] = rest;
+      
+      if (winAction === "open" && winArgs[0]) {
+        await windows.openWindow(winArgs.join(" "));
+      } else if (winAction === "feed" && winArgs[0] && winArgs[1]) {
+        const [windowId, ...seedParts] = winArgs;
+        await windows.feedHope(windowId, seedParts.join(" "));
+      } else if (winAction === "observe") {
+        await windows.observeWindows();
+      } else if (winAction === "manifest") {
+        await hopeManifests();
+      } else {
+        console.log("🪟 Використання: gg windows [open|feed|observe|manifest]");
       }
       break;
   }
