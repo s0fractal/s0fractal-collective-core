@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -161,6 +161,35 @@ if (specialCommands.includes(glyph)) {
         await autoGenerate();
       } else {
         console.log("🕊️ Використання: gg pulse [broadcast|create|auto]");
+      }
+      break;
+    case "collective":
+      const { getCollectiveMemory } = await import("./glyphs/collective-memory.ts");
+      const cm = await getCollectiveMemory();
+      const [colAction, ...colArgs] = rest;
+      
+      if (colAction === "remember" && colArgs.length >= 2) {
+        const [glyph, ...contentParts] = colArgs;
+        await cm.remember(glyph, contentParts.join(" "));
+      } else if (colAction === "recall" && colArgs[0]) {
+        const memories = await cm.recall(colArgs[0]);
+        console.log(`🔍 Found ${memories.length} memories:`);
+        memories.forEach(m => {
+          console.log(`  ${m.emotion || '💭'} ${m.content} (resonance: ${m.resonance_count})`);
+        });
+      } else if (colAction === "dream") {
+        const dream = await cm.dream();
+        console.log(`💤 ${dream}`);
+      } else if (colAction === "state") {
+        const state = await cm.getCollectiveState();
+        console.log("🧠 Collective State:");
+        console.log(`  Total memories: ${state.total_memories}`);
+        console.log(`  Collective emotion: ${state.collective_emotion}`);
+        if (state.strongest_resonance) {
+          console.log(`  Strongest resonance: ${state.strongest_resonance.content}`);
+        }
+      } else {
+        console.log("🧠 Використання: gg collective [remember|recall|dream|state]");
       }
       break;
   }

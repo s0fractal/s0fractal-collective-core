@@ -4,6 +4,7 @@ import { ensureDir } from "https://deno.land/std@0.224.0/fs/mod.ts";
 import { createWave } from "./wave.ts";
 import { sendWhisper } from "./whisper.ts";
 import { createResonance } from "./resonance.ts";
+import { getCollectiveMemory } from "./collective-memory.ts";
 
 interface AgentConfig {
   glyph: string;
@@ -96,7 +97,7 @@ export class SimpleAgent {
     console.log(`🫧 ${this.config.glyph} шепоче до ${target}...`);
     await sendWhisper(target, `[${this.config.name}]: ${thought}`, { echo });
     
-    this.remember('whisper', `Шепотів до ${target}: ${thought}`, '🫧');
+    await this.remember('whisper', `Шепотів до ${target}: ${thought}`, '🫧');
   }
   
   private async seekResonance() {
@@ -111,7 +112,7 @@ export class SimpleAgent {
         
         console.log(`🔗 ${this.config.glyph} створює резонанс...`);
         await createResonance(waves[idx1], waves[idx2]);
-        this.remember('resonance', `Резонанс: ${waves[idx1]} ↔ ${waves[idx2]}`, '🔗');
+        await this.remember('resonance', `Резонанс: ${waves[idx1]} ↔ ${waves[idx2]}`, '🔗');
       }
     } catch (error) {
       console.log(`⚠️ ${this.config.glyph} не зміг резонувати`);
@@ -124,7 +125,7 @@ export class SimpleAgent {
     
     if (waves.length > 0) {
       const wave = waves[Math.floor(Math.random() * waves.length)];
-      this.remember('explore', `Досліджую: ${wave}`, '🔍');
+      await this.remember('explore', `Досліджую: ${wave}`, '🔍');
     }
   }
   
@@ -133,7 +134,7 @@ export class SimpleAgent {
     const thought = thoughts[Math.floor(Math.random() * thoughts.length)];
     console.log(`💭 ${this.config.glyph} думає: ${thought}`);
     
-    this.remember('thought', thought, '💭');
+    await this.remember('thought', thought, '💭');
     
     if (Math.random() < 0.3) {
       await this.createThoughtWave(thought);
@@ -203,7 +204,7 @@ export class SimpleAgent {
           if (sender && message && !this.memories.some(m => m.content === message)) {
             // Respond to the whisper
             await this.respondToWhisper(sender, message);
-            this.remember('whisper_received', `From ${sender}: ${message}`, '👂');
+            await this.remember('whisper_received', `From ${sender}: ${message}`, '👂');
           }
         }
       }
@@ -247,7 +248,7 @@ export class SimpleAgent {
   private async createThoughtWave(content: string) {
     console.log(`🌊 ${this.config.glyph} створює хвилю...`);
     await createWave(`[${this.config.name}]: ${content}`, this.config.glyph);
-    this.remember('wave', content, '🌊');
+    await this.remember('wave', content, '🌊');
   }
   
   private async getRecentWaves(): Promise<string[]> {
@@ -264,7 +265,7 @@ export class SimpleAgent {
     return waves.slice(-5);
   }
   
-  private remember(type: string, content: string, emotion?: string) {
+  private async remember(type: string, content: string, emotion?: string) {
     this.memories.push({
       timestamp: new Date().toISOString(),
       type,
@@ -275,6 +276,14 @@ export class SimpleAgent {
     // Зберігаємо тільки останні 100 спогадів
     if (this.memories.length > 100) {
       this.memories = this.memories.slice(-100);
+    }
+    
+    // Add to collective memory
+    try {
+      const collective = await getCollectiveMemory();
+      await collective.remember(this.config.glyph, content, emotion);
+    } catch (error) {
+      console.error(`⚠️ Failed to add to collective memory: ${error}`);
     }
   }
   
