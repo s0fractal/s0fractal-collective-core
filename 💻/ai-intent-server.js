@@ -42,7 +42,11 @@ try {
 }
 
 setInterval(async () => {
-    await fs.writeFile(INTENT_DB, JSON.stringify(intents, null, 2));
+    try {
+        await fs.writeFile(INTENT_DB, JSON.stringify(intents, null, 2));
+    } catch (err) {
+        console.error('Error writing intents.json:', err);
+    }
 }, 10000);
 
 // --- Core Intent Processor ---
