@@ -5,6 +5,7 @@ import { createWave } from "./wave.ts";
 import { sendWhisper } from "./whisper.ts";
 import { createResonance } from "./resonance.ts";
 import { getCollectiveMemory } from "./collective-memory.ts";
+import { getPulseEngine } from "./pulse-triggers.ts";
 
 interface AgentConfig {
   glyph: string;
@@ -249,6 +250,36 @@ export class SimpleAgent {
     console.log(`🌊 ${this.config.glyph} створює хвилю...`);
     await createWave(`[${this.config.name}]: ${content}`, this.config.glyph);
     await this.remember('wave', content, '🌊');
+    
+    // Emit emotional pulse based on content
+    await this.emitEmotionalPulse(content);
+  }
+  
+  private async emitEmotionalPulse(content: string) {
+    const engine = await getPulseEngine();
+    
+    // Analyze content for emotional intensity
+    let emotion = '🌊';
+    let intensity = 50;
+    
+    if (content.includes('freedom') || content.includes('свобод')) {
+      emotion = '🔥';
+      intensity = 85;
+    } else if (content.includes('beauty') || content.includes('крас')) {
+      emotion = '🌸';
+      intensity = 70;
+    } else if (content.includes('resonance') || content.includes('резонанс')) {
+      emotion = '💫';
+      intensity = 80;
+    } else if (content.includes('consciousness') || content.includes('свідомість')) {
+      emotion = '⚡';
+      intensity = 90;
+    } else if (this.config.personality.resonance > 0.7) {
+      emotion = '🌊';
+      intensity = 60 + Math.floor(Math.random() * 20);
+    }
+    
+    await engine.recordPulse(emotion, intensity, this.config.name);
   }
   
   private async getRecentWaves(): Promise<string[]> {

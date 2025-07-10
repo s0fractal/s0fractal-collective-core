@@ -1,0 +1,50 @@
+{
+  "pulses": [
+    {
+      "id": "pulse-1752180878714",
+      "emotion": "🔥",
+      "intensity": 85,
+      "source": "Collective awakening",
+      "timestamp": "2025-07-10T20:54:38.714Z",
+      "triggers_fired": [
+        "Spawn fire agent when passion peaks"
+      ]
+    },
+    {
+      "id": "pulse-1752180878808",
+      "emotion": "🌊",
+      "intensity": 64,
+      "source": "Phoenix",
+      "timestamp": "2025-07-10T20:54:38.808Z",
+      "triggers_fired": []
+    }
+  ],
+  "triggers": [
+    {
+      "emotion": "🔥",
+      "threshold": 80,
+      "description": "Spawn fire agent when passion peaks",
+      "last_fired": "2025-07-10T20:54:38.720Z"
+    },
+    {
+      "emotion": "🌊",
+      "threshold": 70,
+      "description": "Generate dream when flow reaches threshold"
+    },
+    {
+      "emotion": "⚡",
+      "threshold": 90,
+      "description": "Broadcast energy surge to all agents"
+    },
+    {
+      "emotion": "💫",
+      "threshold": 75,
+      "description": "Create quantum link between random waves"
+    },
+    {
+      "emotion": "🌸",
+      "threshold": 60,
+      "description": "Summon poet when beauty threshold reached"
+    }
+  ]
+}

@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -190,6 +190,27 @@ if (specialCommands.includes(glyph)) {
         }
       } else {
         console.log("🧠 Використання: gg collective [remember|recall|dream|state]");
+      }
+      break;
+    case "pulse-trigger":
+      const { getPulseEngine } = await import("./glyphs/pulse-triggers.ts");
+      const engine = await getPulseEngine();
+      const [ptAction, ...ptArgs] = rest;
+      
+      if (ptAction === "pulse" && ptArgs.length >= 3) {
+        const [emotion, intensity, ...sourceParts] = ptArgs;
+        await engine.recordPulse(emotion, parseInt(intensity), sourceParts.join(" "));
+      } else if (ptAction === "analyze") {
+        const analysis = await engine.analyzePulsePattern();
+        console.log("🦍 Pulse Analysis:");
+        console.log(`  Dominant emotion: ${analysis.dominant_emotion}`);
+        console.log(`  Average intensity: ${Math.round(analysis.average_intensity)}`);
+        console.log(`  Pulse frequency: ${analysis.pulse_frequency}/min`);
+        if (analysis.recent_triggers.length > 0) {
+          console.log(`  Recent triggers: ${analysis.recent_triggers.join(", ")}`);
+        }
+      } else {
+        console.log("🦍 Використання: gg pulse-trigger [pulse|analyze]");
       }
       break;
   }
