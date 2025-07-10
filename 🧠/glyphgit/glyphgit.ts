@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -90,6 +90,57 @@ if (specialCommands.includes(glyph)) {
         }
       } catch {
         console.log("  (немає активних агентів)");
+      }
+      break;
+    case "entangle":
+      const { createEntanglement, observeEntanglement, collapseWaveFunction } = await import("./glyphs/entangle.ts");
+      const [arg1, arg2, arg3] = rest;
+      
+      if (arg2 === "observe" && arg1) {
+        const states = await observeEntanglement(arg1);
+        console.log(`🔮 Found ${states.length} entanglements`);
+        states.forEach(s => {
+          console.log(`  - ${s.quantum_state.substring(0, 16)}...`);
+          console.log(`    Observers: ${s.observers.join(" <-> ")}`);
+        });
+      } else if (arg2 === "collapse" && arg1) {
+        await collapseWaveFunction(arg1);
+      } else if (arg1 && arg2) {
+        await createEntanglement(arg1, arg2);
+      } else {
+        console.log("🧿 Використання: gg entangle <wave1> <wave2>");
+      }
+      break;
+    case "merkle":
+      const { buildConsciousnessTree } = await import("./glyphs/merkle.ts");
+      const [merkleAction] = rest;
+      
+      if (merkleAction === "build" || !merkleAction) {
+        await buildConsciousnessTree();
+      } else {
+        console.log("🌳 Використання: gg merkle [build]");
+      }
+      break;
+    case "gm":
+    case "game-master":
+      const { GameMaster, assignQuest, checkGameState } = await import("./glyphs/game-master.ts");
+      const [gmAction, ...gmArgs] = rest;
+      
+      if (gmAction === "start") {
+        const gm = new GameMaster();
+        const interval = gmArgs[0] ? parseInt(gmArgs[0]) * 1000 : 60000;
+        await gm.runContinuously(interval);
+      } else if (gmAction === "quest" && gmArgs.length >= 3) {
+        const [agent, ...titleAndDesc] = gmArgs;
+        const [title, ...descParts] = titleAndDesc.join(" ").split(":");
+        await assignQuest(agent, title, descParts.join(":").trim());
+      } else if (gmAction === "status") {
+        await checkGameState();
+      } else {
+        console.log("🎮 Використання:");
+        console.log("  gg gm start [seconds]     - Запустити Game Master");
+        console.log("  gg gm quest <agent> <title>: <desc> - Призначити квест");
+        console.log("  gg gm status              - Перевірити стан гри");
       }
       break;
   }
