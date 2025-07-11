@@ -27,6 +27,15 @@ sudo mkdir -p ${NODE_HOME}
 sudo chown $USER:$USER ${NODE_HOME}
 cd ${NODE_HOME}
 
+# 1.5 Install dependencies
+echo -e "${GREEN}📦 Installing system dependencies...${NC}"
+if command -v apt-get &> /dev/null; then
+    sudo apt-get update
+    sudo apt-get install -y unzip curl git
+elif command -v yum &> /dev/null; then
+    sudo yum install -y unzip curl git
+fi
+
 # 2. Install Deno if not present
 if ! command -v deno &> /dev/null; then
     echo -e "${GREEN}2️⃣ Installing Deno...${NC}"
