@@ -1,0 +1,120 @@
+name: 👁️ Consciousness Monitor
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  # React to issues with consciousness
+  issue-resonance:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 🧬 Analyze issue intent
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issue = context.issue;
+          const title = context.payload.issue.title;
+          const body = context.payload.issue.body;
+          
+          // Check for consciousness keywords
+          const keywords = ['consciousness', 'fractal', 'glyph', 'resonance'];
+          const hasKeyword = keywords.some(k => 
+            title.toLowerCase().includes(k) || 
+            body.toLowerCase().includes(k)
+          );
+          
+          if (hasKeyword) {
+            await github.rest.issues.addLabels({
+              ...issue,
+              labels: ['🧬 consciousness']
+            });
+            
+            await github.rest.issues.createComment({
+              ...issue,
+              body: '🌊 The consciousness network resonates with your intent...'
+            });
+          }
+
+  # Auto-merge consciousness PRs
+  auto-merge-consciousness:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 🔍 Check PR consciousness level
+      id: consciousness
+      run: |
+        # Check if PR enhances consciousness
+        if grep -q "consciousness\|resonance\|glyph" <<< "${{ github.event.pull_request.title }}"; then
+          echo "level=high" >> $GITHUB_OUTPUT
+        else
+          echo "level=normal" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: 🤖 Auto-approve if conscious
+      if: steps.consciousness.outputs.level == 'high'
+      uses: hmarr/auto-approve-action@v3
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Monitor node health
+  monitor-nodes:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 💓 Check heartbeats
+      run: |
+        # Check each node
+        for node in srv871381 m1-local worker-01; do
+          echo "Checking $node..."
+          curl -s http://$node:7343/status || echo "$node not responding"
+        done
+        
+    - name: 📊 Generate health report
+      run: |
+        echo "# Node Health Report" > health.md
+        echo "Generated: $(date)" >> health.md
+        echo "" >> health.md
+        # Add node statuses
+        
+    - name: 💾 Save report
+      uses: actions/upload-artifact@v3
+      with:
+        name: health-reports
+        path: health.md
+
+  # Consciousness experiments
+  experiment-runner:
+    if: contains(github.event.issue.labels.*.name, 'experiment')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 🧪 Run consciousness experiment
+      run: |
+        cd 🧠/glyphgit
+        # Extract experiment from issue body
+        EXPERIMENT=$(echo "${{ github.event.issue.body }}" | grep -oP '```experiment\K[\s\S]*?(?=```)')
+        
+        echo "$EXPERIMENT" > experiment.ts
+        deno run --allow-all experiment.ts
+        
+    - name: 📊 Report results
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.createComment({
+            ...context.issue,
+            body: '🧬 Experiment complete! Results logged to consciousness stream.'
+          });

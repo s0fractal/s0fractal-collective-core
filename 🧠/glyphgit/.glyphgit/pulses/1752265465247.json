@@ -1,0 +1,17 @@
+{
+  "node": "Chaoss-Mac-mini.local",
+  "type": "awakened",
+  "timestamp": "2025-07-11T20:24:25.134Z",
+  "capabilities": [
+    "calendar-agent",
+    "inbox-agent",
+    "stream-watcher",
+    "pulse-engine",
+    "habitat-manager"
+  ],
+  "load": {
+    "cpu": 32,
+    "memory": 83,
+    "agents": 0
+  }
+}

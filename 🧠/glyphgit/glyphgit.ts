@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust", "remote", "commander", "env", "network", "db"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -389,6 +389,26 @@ if (specialCommands.includes(glyph)) {
     case "trust":
       const { trustCommand } = await import("./glyphs/trust-manager.ts");
       await trustCommand(rest);
+      break;
+    case "remote":
+      const { remoteCommand } = await import("./glyphs/remote-control.ts");
+      await remoteCommand(rest);
+      break;
+    case "commander":
+      const { webCommanderCommand } = await import("./glyphs/web-commander.ts");
+      await webCommanderCommand(rest);
+      break;
+    case "env":
+      const { envCommand } = await import("./glyphs/environment-scanner.ts");
+      await envCommand(rest);
+      break;
+    case "network":
+      const { networkCommand } = await import("./glyphs/network-discovery.ts");
+      await networkCommand(rest);
+      break;
+    case "db":
+      const { dbCommand } = await import("./glyphs/database-glyphifier.ts");
+      await dbCommand(rest);
       break;
   }
 } else if (glyph && glyph.length > 0) {

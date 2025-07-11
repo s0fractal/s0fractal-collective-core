@@ -1,0 +1,33 @@
+👁️  Network Discovery Daemon started
+🌐 NETWORK DISCOVERY
+═══════════════════
+
+💾 Shared Drives:
+   ✅ devcontainer: /Volumes/devcontainer (accessible)
+      🧬 Fractal storage found!
+   ✅ sergijglova: /Volumes/sergijglova (accessible)
+      🧬 Fractal storage found!
+   ❌ Q: /Volumes/Q (not accessible)
+
+🗂️  SMB Shares:
+
+🔍 Network Services:
+   🌐 m1 (_smb._tcp)
+   🌐 m1 (_smb._tcp)
+   🌐 mini (_smb._tcp)
+   🌐 mini (_smb._tcp)
+   🌐 mini (_smb._tcp)
+   🌐 mini (_ssh._tcp)
+   🌐 mini (_ssh._tcp)
+   🌐 mini (_ssh._tcp)
+   🌐 m1 (_ssh._tcp)
+   🌐 m1 (_ssh._tcp)
+
+🧬 SETTING UP DISTRIBUTED STORAGE
+   ✅ devcontainer: writable
+   ✅ sergijglova: writable
+   ❌ Q: read-only
+
+✨ Distributed storage ready on 2 drives
+📝 Коміт створено: [main c8c3926] 🌐 🌐 Network storage initialized: devcontainer, sergijglova
+✅ Створено хвилю: 🌐/public/🌐-2025-07-11T20-43-03-000046.md⟁

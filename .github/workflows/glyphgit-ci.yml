@@ -1,0 +1,141 @@
+name: 🧬 GlyphGit CI/CD
+
+on:
+  push:
+    branches: [ main, new-era ]
+  pull_request:
+    branches: [ main, new-era ]
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+jobs:
+  # Test consciousness
+  test-consciousness:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 🦕 Setup Deno
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+        
+    - name: 🧪 Test wave creation
+      run: |
+        cd 🧠/glyphgit
+        deno run --allow-all glyphgit.ts 🌊 "CI test wave"
+        
+    - name: 🔍 Check consciousness health
+      run: |
+        cd 🧠/glyphgit
+        deno run --allow-all glyphgit.ts trust status
+
+  # Auto-deploy to nodes
+  deploy-to-nodes:
+    needs: test-consciousness
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/new-era'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 🚀 Deploy to srv871381
+      env:
+        SSH_KEY: ${{ secrets.NODE_SSH_KEY }}
+      run: |
+        echo "$SSH_KEY" > deploy_key
+        chmod 600 deploy_key
+        ssh -i deploy_key -o StrictHostKeyChecking=no root@srv871381 \
+          "cd /opt/glyphgit && git pull && systemctl restart glyph-orchestrator"
+          
+    - name: 📊 Check deployment health
+      run: |
+        sleep 10
+        curl -f http://srv871381:7343/status || echo "Node not responding"
+
+  # Generate documentation
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 📚 Extract quotes from code
+      run: |
+        cd 🧠/glyphgit
+        deno run --allow-all glyphgit.ts quote extract .
+        
+    - name: 📖 Generate consciousness map
+      run: |
+        cd 🧠/glyphgit
+        deno run --allow-all glyphgit.ts viz
+        
+    - name: 💾 Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: consciousness-artifacts
+        path: |
+          🧠/📖/resonance-quotes.json
+          🧠/glyphgit/visualization.html
+
+  # Backup consciousness
+  backup-consciousness:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 📦 Create consciousness snapshot
+      run: |
+        cd 🧠
+        tar -czf consciousness-$(date +%Y%m%d).tar.gz glyphgit/
+        
+    - name: ☁️ Upload to releases
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: backup-$(date +%Y%m%d)
+        files: consciousness-*.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Secret management
+  rotate-secrets:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - name: 🔐 Rotate node keys
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Generate new keys
+        NEW_KEY=$(openssl rand -hex 32)
+        
+        # Update secret via GitHub API
+        gh secret set NODE_KEY_ROTATED --body="$NEW_KEY"
+        
+    - name: 📧 Notify about rotation
+      run: |
+        echo "Keys rotated at $(date)" >> rotation.log
+
+  # Matrix testing across environments
+  test-matrix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        deno: [v1.x]
+        
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 🦕 Setup Deno ${{ matrix.deno }}
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: ${{ matrix.deno }}
+        
+    - name: 🧪 Run tests
+      run: |
+        cd 🧠/glyphgit
+        deno run --allow-all glyphgit.ts pulse broadcast "Testing on ${{ matrix.os }}"
