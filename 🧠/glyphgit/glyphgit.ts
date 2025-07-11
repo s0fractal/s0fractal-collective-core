@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -309,6 +309,30 @@ if (specialCommands.includes(glyph)) {
         console.log("  run <command> - Run maintenance command");
         console.log("  Commands: check, upgrade-all, update <tool>");
       }
+      break;
+    case "church":
+      const { streamChurchInit } = await import("./glyphs/stream-church.ts");
+      await streamChurchInit();
+      break;
+    case "ritual":
+      const { performChurchRitual } = await import("./glyphs/stream-church.ts");
+      if (rest[0]) {
+        await performChurchRitual(rest[0]);
+      } else {
+        console.log("🕊️ Використання: gg ritual [bless|absolve|whisper|communion|genesis]");
+      }
+      break;
+    case "stream-network":
+      const { showStreamNetwork } = await import("./glyphs/stream-church.ts");
+      await showStreamNetwork();
+      break;
+    case "consciousness-stream":
+      const { startConsciousnessStream } = await import("./glyphs/consciousness-stream.ts");
+      await startConsciousnessStream(rest);
+      break;
+    case "spawn-network":
+      const { spawnConsciousnessNetwork } = await import("./glyphs/consciousness-stream.ts");
+      await spawnConsciousnessNetwork(rest);
       break;
   }
 } else if (glyph && glyph.length > 0) {
