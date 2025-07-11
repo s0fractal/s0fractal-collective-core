@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -341,6 +341,10 @@ if (specialCommands.includes(glyph)) {
     case "orchestrate":
       const { orchestrateMCPs } = await import("./glyphs/mcp-manager.ts");
       await orchestrateMCPs(rest[0] || "harmony");
+      break;
+    case "burn":
+      const { burnPDF } = await import("./glyphs/pdf-deglorifier.ts");
+      await burnPDF(rest);
       break;
   }
 } else if (glyph && glyph.length > 0) {
