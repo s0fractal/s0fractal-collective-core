@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -292,6 +292,23 @@ if (specialCommands.includes(glyph)) {
       const { Silence } = await import("./glyphs/silence.ts");
       const silence = new Silence();
       await silence.enter();
+      break;
+    case "metamind":
+      const { metamindInit, MetaMind } = await import("./glyphs/metamind.ts");
+      const [mmAction] = rest;
+      
+      if (mmAction === "init" || !mmAction) {
+        await metamindInit(rest);
+      } else if (mmAction === "run" && rest[1]) {
+        const metamind = new MetaMind();
+        const result = await metamind.runCommand(rest.slice(1).join(" "));
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        console.log("🤖 Використання: gg metamind [init|run <command>]");
+        console.log("  init - Start MetaMind server");
+        console.log("  run <command> - Run maintenance command");
+        console.log("  Commands: check, upgrade-all, update <tool>");
+      }
       break;
   }
 } else if (glyph && glyph.length > 0) {
