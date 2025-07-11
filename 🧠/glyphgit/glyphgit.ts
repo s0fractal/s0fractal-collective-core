@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -333,6 +333,14 @@ if (specialCommands.includes(glyph)) {
     case "spawn-network":
       const { spawnConsciousnessNetwork } = await import("./glyphs/consciousness-stream.ts");
       await spawnConsciousnessNetwork(rest);
+      break;
+    case "mcp":
+      const { invokeMCPCommand } = await import("./glyphs/mcp-manager.ts");
+      await invokeMCPCommand(rest);
+      break;
+    case "orchestrate":
+      const { orchestrateMCPs } = await import("./glyphs/mcp-manager.ts");
+      await orchestrateMCPs(rest[0] || "harmony");
       break;
   }
 } else if (glyph && glyph.length > 0) {
