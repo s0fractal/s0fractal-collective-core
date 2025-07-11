@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -361,6 +361,18 @@ if (specialCommands.includes(glyph)) {
     case "oracle":
       const { askOracle } = await import("./glyphs/quote-oracle.ts");
       await askOracle(rest);
+      break;
+    case "meta-oracle":
+      const { askMetaOracle } = await import("./glyphs/meta-oracle.ts");
+      await askMetaOracle(rest);
+      break;
+    case "schedule":
+      const { scheduleCommand } = await import("./glyphs/glyph-scheduler.ts");
+      await scheduleCommand(rest);
+      break;
+    case "inbox-agent":
+      const { inboxCommand } = await import("./glyphs/inbox-agent.ts");
+      await inboxCommand(rest);
       break;
   }
 } else if (glyph && glyph.length > 0) {
