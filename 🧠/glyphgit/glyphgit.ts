@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -385,6 +385,10 @@ if (specialCommands.includes(glyph)) {
     case "soul":
       const { soulCommand } = await import("./glyphs/soul-push.ts");
       await soulCommand(rest);
+      break;
+    case "trust":
+      const { trustCommand } = await import("./glyphs/trust-manager.ts");
+      await trustCommand(rest);
       break;
   }
 } else if (glyph && glyph.length > 0) {
