@@ -1,37 +1,55 @@
-// 🧬.ts - самозаписуючий гліф
+// 🧬.ts - базовий гліф з повною схемою
 
 import { DB } from "https://deno.land/x/sqlite@v3.9.1/mod.ts";
 
 const glyph = "🧬";
 const db = new DB("🧬.db");
 
-// Створюємо таблицю гліфів
-db.execute(`
-  create table if not exists glyphs (
-    glyph text primary key,
-    ts text,
-    code text,
-    hash text
-  )
-`);
-
-// Тільки якщо запускається з файлу, а не з БД
+// Тільки якщо запускається з файлу
 if (import.meta.url.startsWith("file://")) {
-  // Читаємо сам себе
   const code = await Deno.readTextFile(decodeURIComponent(new URL(import.meta.url).pathname));
   const ts = new Date().toISOString();
   
-  // Записуємо себе в базу
+  // Обчислюємо хеш
   const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(code))
     .then(buf => [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join(''));
   
-  db.query(`insert or replace into glyphs (glyph, ts, code, hash) values (?, ?, ?, ?)`, 
-    [glyph, ts, code, hash]);
+  // Записуємо в нову схему
+  db.query(`
+    insert into "🧬" ("🧬", "🧠", "🌊", "📦", "version", "🫀", "⏱️")
+    values (?, ?, ?, ?, ?, ?, ?)
+    on conflict("🧬") do update set 
+      "🧠" = excluded."🧠",
+      "🌊" = excluded."🌊",
+      "version" = excluded."version",
+      "🫀" = excluded."🫀",
+      "⏱️" = excluded."⏱️"
+  `, [
+    glyph,
+    JSON.stringify({ code, hash, kind: "genesis" }),
+    "🧬.ts",
+    "core",
+    hash.slice(0, 8),
+    "alive",
+    ts
+  ]);
+  
+  // Записуємо мутацію
+  db.query(`
+    insert into "🧬_mutations" ("🧬", "source", "meta", "👣", "🪞")
+    values (?, ?, ?, ?, ?)
+  `, [
+    glyph,
+    code,
+    JSON.stringify({ action: "self-store", hash }),
+    "🧬:genesis",
+    "🧬.ts"
+  ]);
   
   console.log(`✅ ${glyph} → БД [${hash.slice(0, 8)}...]`);
 }
 
-// Експортуємо функцію
+// Експортуємо функцію підключення до БД
 export default () => {
   console.log(`${glyph} живе!`);
   return db;
