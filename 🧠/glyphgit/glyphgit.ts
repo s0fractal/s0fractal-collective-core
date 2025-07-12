@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust", "remote", "commander", "env", "network", "db"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust", "remote", "commander", "env", "network", "db", "monitor", "updater", "emotion", "prophecy", "storage", "sqlite", "pool", "workspace", "email-mcp", "self", "fractal"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -409,6 +409,50 @@ if (specialCommands.includes(glyph)) {
     case "db":
       const { dbCommand } = await import("./glyphs/database-glyphifier.ts");
       await dbCommand(rest);
+      break;
+    case "monitor":
+      const { monitorCommand } = await import("./glyphs/node-monitor.ts");
+      await monitorCommand(rest);
+      break;
+    case "updater":
+      const { updaterCommand } = await import("./glyphs/self-updater.ts");
+      await updaterCommand(rest);
+      break;
+    case "emotion":
+      const { emotionCommand } = await import("./glyphs/emotion-mirror.ts");
+      await emotionCommand(rest);
+      break;
+    case "prophecy":
+      const { prophecyCommand } = await import("./glyphs/prophecy-generator.ts");
+      await prophecyCommand(rest);
+      break;
+    case "storage":
+      const { storageCommand } = await import("./glyphs/micro-storage.ts");
+      await storageCommand(rest);
+      break;
+    case "sqlite":
+      const { sqliteCommand } = await import("./glyphs/sqlite-store.ts");
+      await sqliteCommand(rest);
+      break;
+    case "pool":
+      const { poolCommand } = await import("./glyphs/intent-pool.ts");
+      await poolCommand(rest);
+      break;
+    case "workspace":
+      const { workspaceCommand } = await import("./glyphs/workspace-setup.ts");
+      await workspaceCommand(rest);
+      break;
+    case "email-mcp":
+      const { emailMCPCommand } = await import("./simple-email-mcp.ts");
+      await emailMCPCommand(rest);
+      break;
+    case "self":
+      const { selfAwarenessCommand } = await import("./glyphs/self-awareness.ts");
+      await selfAwarenessCommand(rest);
+      break;
+    case "fractal":
+      const { fractalCommand } = await import("./init-fractal-db.ts");
+      await fractalCommand(rest);
       break;
   }
 } else if (glyph && glyph.length > 0) {
