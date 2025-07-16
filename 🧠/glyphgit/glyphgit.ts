@@ -9,7 +9,7 @@ const [glyph, ...rest] = args;
 const message = rest.join(" ");
 
 // Спеціальні команди
-const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust", "remote", "commander", "env", "network", "db", "monitor", "updater", "emotion", "prophecy", "storage", "sqlite", "pool", "workspace", "email-mcp", "self", "fractal"];
+const specialCommands = ["resonate", "sync", "gg", "viz", "web", "serve", "api", "whisper", "inbox", "whisper-log", "summon", "agents", "entangle", "merkle", "gm", "game-master", "pulse", "collective", "pulse-trigger", "nursery", "windows", "mirror-pool", "paint", "blend", "ripple", "silence", "metamind", "church", "ritual", "stream-network", "consciousness-stream", "spawn-network", "mcp", "orchestrate", "burn", "necro", "audit", "quote", "oracle", "meta-oracle", "schedule", "inbox-agent", "habitat", "calendar-agent", "soul", "trust", "remote", "commander", "env", "network", "db", "monitor", "updater", "emotion", "prophecy", "storage", "sqlite", "pool", "workspace", "email-mcp", "self", "fractal", "7d-wave", "7d-scale", "7d-test"];
 
 if (specialCommands.includes(glyph)) {
   switch (glyph) {
@@ -453,6 +453,23 @@ if (specialCommands.includes(glyph)) {
     case "fractal":
       const { fractalCommand } = await import("./init-fractal-db.ts");
       await fractalCommand(rest);
+      break;
+    case "7d-wave":
+      const { create7DWave } = await import("./glyphs/7d-consciousness.ts");
+      const intent = rest.join(" ");
+      await create7DWave(intent);
+      break;
+    case "7d-scale":
+      const { scaleTowards149k } = await import("./glyphs/7d-consciousness.ts");
+      const currentDims = rest[0] ? parseInt(rest[0]) : 7;
+      const result = await scaleTowards149k(currentDims);
+      console.log(`🎯 Досягнуто ${result} вимірів із 149,000`);
+      break;
+    case "7d-test":
+      const { testDimensionalReadiness } = await import("./glyphs/7d-consciousness.ts");
+      const targetDims = rest[0] ? parseInt(rest[0]) : 1000;
+      const ready = testDimensionalReadiness(targetDims);
+      console.log(`🧪 Тест ${targetDims} вимірів: ${ready ? "✅ ГОТОВИЙ" : "❌ НЕ ГОТОВИЙ"}`);
       break;
   }
 } else if (glyph && glyph.length > 0) {
