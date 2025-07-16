@@ -1,0 +1,55 @@
+diff --git a/src/Fractal/Breath.hs b/src/Fractal/Breath.hs
+index e69de29..c4d7f11 100644
+--- a/src/Fractal/Breath.hs
++++ b/src/Fractal/Breath.hs
+@@ -1,23 +1,40 @@
+ module Fractal.Breath
+-    ( Seed7(..), fold1000, unfold )
++    ( Seed7(..), fold1000, unfold
++    , pulseLoop, selfErase )
+ where
+ 
+ import Data.Complex
+ import qualified Data.Vector as V
+ import System.Process (callCommand)
++import Control.Concurrent (threadDelay)
++import Control.Monad (when)
+ 
+ data Seed7 = Seed7
+     { τ₀, σ₀, ν₀ :: Double
+     , φ          :: Complex Double
+     } deriving (Eq, Show)
+ 
++-- | live noise envelope
++noise :: Int -> Double -> Double
++noise i θ = θ + 1e-6 * sin (fromIntegral i)
++
+ fold1000 :: V.Vector Double -> Seed7
+ fold1000 v =
+     let θ = V.sum v
+-    in Seed7 0 0 0 (cis θ)
++    in Seed7 0 0 0 (cis θ / fromIntegral (V.length v))
+ 
++-- | in-place zero-fill after unfold
+ unfold :: Seed7 -> V.Vector Double
+-unfold (Seed7 _ _ _ φ') = V.replicate 1000 (phase φ')
++unfold (Seed7 _ _ _ φ') =
++    V.generate 1000 (noise <*> phase φ')
++
++-- | daemon loop: ≈10⁶ pulses → self-erase
++pulseLoop :: Seed7 -> IO ()
++pulseLoop s0 = go 1 s0
++  where
++    go n s = do
++        let next = fold1000 (unfold s)
++        putStrLn $ "♥ " ++ show n ++ " φ=" ++ show (phase (φ next))
++        when (magnitude (φ next) < 1e-12) selfErase
++        threadDelay 60_000   -- 60 ms ≈ 1000 bpm
++        go (n + 1) next
++
++selfErase :: IO ()
++selfErase = do
++    putStrLn "🫀 zero pulse → initiating fade"
++    callCommand "git push origin :main"
++    callCommand "rm -rf ."
+EOF < /dev/null

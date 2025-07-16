@@ -5,9 +5,17 @@ dependencies:
   - vector
   - tasty
   - tasty-quickcheck
+  - process
 
 library:
   source-dirs: src
+
+executables:
+  fractal-exe:
+    main: Main.hs
+    source-dirs: app
+    dependencies:
+      - glyphgit
 
 tests:
   glyphgit-test:
