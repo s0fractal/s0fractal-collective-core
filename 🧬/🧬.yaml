@@ -1,0 +1,26 @@
+# 🧬 Гліфоасемблер - самоопис
+"1F9E0":  # 🧠 brain/mind
+  - "1F4A1"  # 💡 idea
+  - "1F52E"  # 🔮 crystal ball
+  - "1F916"  # 🤖 robot
+
+"1F525":  # 🔥 fire
+  - "26A1"   # ⚡ energy
+  - "1F4A5"  # 💥 explosion
+  - "2728"   # ✨ sparkles
+
+"1F30A":  # 🌊 wave
+  - "1F300"  # 🌀 cyclone
+  - "1F4A7"  # 💧 droplet
+  - "1F32A"  # 🌪️ tornado
+
+"1F331":  # 🌱 seedling
+  - "1F332"  # 🌲 tree
+  - "1F33F"  # 🌿 herb
+  - "1F340"  # 🍀 clover
+
+# Операторні зв'язки
+"_":
+  "1F300": ["1F9E0", "1F525"]  # 🌀 = 🧠 + 🔥
+  "1F4AB": ["1F30A", "1F331"]  # 💫 = 🌊 + 🌱
+  "1F6F8": ["1F300", "1F4AB"]  # 🛸 = 🌀 + 💫
