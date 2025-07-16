@@ -4,10 +4,19 @@
   "description": "Unicode glyph folder icons for G1F9E0 format",
   "version": "0.1.0",
   "publisher": "s0fractal",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/s0fractal/glyphgit"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
   "categories": ["Themes"],
+  "keywords": ["glyph", "icons", "unicode", "folders", "theme"],
+  "galleryBanner": {
+    "color": "#1a1a1a",
+    "theme": "dark"
+  },
   "contributes": {
     "iconThemes": [
       {

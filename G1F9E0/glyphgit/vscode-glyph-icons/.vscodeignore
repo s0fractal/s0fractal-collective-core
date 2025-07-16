@@ -1,0 +1,5 @@
+generate-icons.js
+.gitignore
+**/*.ts
+**/*.map
+.vscode/**
