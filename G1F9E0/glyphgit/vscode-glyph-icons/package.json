@@ -1,0 +1,20 @@
+{
+  "name": "glyph-folder-icons",
+  "displayName": "Glyph Folder Icons",
+  "description": "Unicode glyph folder icons for G1F9E0 format",
+  "version": "0.1.0",
+  "publisher": "s0fractal",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Themes"],
+  "contributes": {
+    "iconThemes": [
+      {
+        "id": "glyph-icons",
+        "label": "Glyph Icons",
+        "path": "./glyph-icon-theme.json"
+      }
+    ]
+  }
+}

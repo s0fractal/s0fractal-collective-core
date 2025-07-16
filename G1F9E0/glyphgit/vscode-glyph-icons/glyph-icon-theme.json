@@ -1,0 +1,54 @@
+{
+  "folderNames": {
+    "G1F30A": "_ocean",
+    "G1F4A1": "_idea",
+    "G1F4BB": "_computer",
+    "G1F4BE": "_disk",
+    "G1F4DC": "_scroll",
+    "G1F9E0": "_brain",
+    "G1F9EC": "_dna",
+    "G1F9EA": "_test",
+    "G1F310": "_globe",
+    "G1FAE7": "_bubbles"
+  },
+  "folder": "_folder",
+  "folderExpanded": "_folder_open",
+  "iconDefinitions": {
+    "_folder": {
+      "iconPath": "./icons/folder.svg"
+    },
+    "_folder_open": {
+      "iconPath": "./icons/folder-open.svg"
+    },
+    "_ocean": {
+      "iconPath": "./icons/ocean.svg"
+    },
+    "_idea": {
+      "iconPath": "./icons/idea.svg"
+    },
+    "_computer": {
+      "iconPath": "./icons/computer.svg"
+    },
+    "_disk": {
+      "iconPath": "./icons/disk.svg"
+    },
+    "_scroll": {
+      "iconPath": "./icons/scroll.svg"
+    },
+    "_brain": {
+      "iconPath": "./icons/brain.svg"
+    },
+    "_dna": {
+      "iconPath": "./icons/dna.svg"
+    },
+    "_test": {
+      "iconPath": "./icons/test.svg"
+    },
+    "_globe": {
+      "iconPath": "./icons/globe.svg"
+    },
+    "_bubbles": {
+      "iconPath": "./icons/bubbles.svg"
+    }
+  }
+}
