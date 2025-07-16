@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>🌐 MetaOS Prototype - Fractal Reality Mirror</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <style>
+    body { margin: 0; font-family: monospace; overflow: hidden; }
+    
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 1000;
+    }
+    
+    #screen-mirror {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 300px;
+      height: 200px;
+      border: 2px solid #00ff88;
+      border-radius: 10px;
+      background: #000;
+      display: none;
+    }
+    
+    button {
+      background: #00ff88;
+      color: black;
+      border: none;
+      padding: 8px 15px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+    #intention-info {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 400px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <h3>🌐 MetaOS Prototype</h3>
+    <button onclick="toggleScreenMirror()">📺 Toggle Screen Mirror</button>
+    <button onclick="showIntentionGraph()">🧠 Show Intentions</button>
+    <button onclick="activateOSProjection('macos')">🍎 macOS Layer</button>
+    <button onclick="activateOSProjection('ubuntu')">🐧 Ubuntu Layer</button>
+    <button onclick="activateOSProjection('windows')">🪟 Windows Layer</button>
+  </div>
+  
+  <canvas id="screen-mirror"></canvas>
+  
+  <div id="intention-info">
+    <h4>Current Intention Chain</h4>
+    <div id="intention-content"></div>
+  </div>
+
+  <a-scene background="color: #0a0a14">
+    <!-- Камера -->
+    <a-entity camera look-controls wasd-controls position="0 5 20">
+      <a-cursor color="#4CC3D9"></a-cursor>
+    </a-entity>
+
+    <!-- MetaOS Core -->
+    <a-entity id="metaos-core" position="0 0 0">
+      
+      <!-- Центральне ядро -->
+      <a-entity id="fractal-core">
+        <a-octahedron radius="3" color="#1a1a3a" opacity="0.3">
+          <a-animation attribute="rotation"
+                       to="360 360 0"
+                       dur="60000"
+                       repeat="indefinite"></a-animation>
+        </a-octahedron>
+        
+        <!-- Внутрішнє світло -->
+        <a-light type="point" color="#00ff88" intensity="0.5"></a-light>
+      </a-entity>
+
+      <!-- Екран проекція (прихована спочатку) -->
+      <a-plane id="screen-projection"
+               width="16" 
+               height="9"
+               position="0 8 -5"
+               material="shader: flat; side: double"
+               visible="false">
+        <a-text value="Screen Mirror Placeholder"
+                align="center"
+                color="#00ff88"
+                scale="3 3 3"></a-text>
+      </a-plane>
+
+      <!-- Граф інтенцій -->
+      <a-entity id="intention-graph" position="0 0 0">
+        <!-- Вузли інтенцій -->
+        <a-entity class="intention-node" 
+                  position="0 0 0"
+                  data-intention="core">
+          <a-sphere radius="0.5" color="#00ff88"></a-sphere>
+          <a-text value="MetaOS Core" 
+                  align="center" 
+                  position="0 1 0"
+                  scale="2 2 2"></a-text>
+        </a-entity>
+
+        <a-entity class="intention-node"
+                  position="5 2 0"
+                  data-intention="absorb">
+          <a-sphere radius="0.4" color="#0088ff"></a-sphere>
+          <a-text value="Absorb Software" 
+                  align="center" 
+                  position="0 0.8 0"
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+
+        <a-entity class="intention-node"
+                  position="-5 2 0"
+                  data-intention="monetize">
+          <a-sphere radius="0.4" color="#ff00ff"></a-sphere>
+          <a-text value="Create Products" 
+                  align="center" 
+                  position="0 0.8 0"
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+
+        <a-entity class="intention-node"
+                  position="0 4 -3"
+                  data-intention="autonomy">
+          <a-sphere radius="0.4" color="#ffff00"></a-sphere>
+          <a-text value="Achieve Autonomy" 
+                  align="center" 
+                  position="0 0.8 0"
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+
+        <!-- Зв'язки між інтенціями -->
+        <a-entity line="start: 0 0 0; end: 5 2 0; color: #00ff88; opacity: 0.3"></a-entity>
+        <a-entity line="start: 0 0 0; end: -5 2 0; color: #00ff88; opacity: 0.3"></a-entity>
+        <a-entity line="start: 5 2 0; end: 0 4 -3; color: #0088ff; opacity: 0.3"></a-entity>
+        <a-entity line="start: -5 2 0; end: 0 4 -3; color: #ff00ff; opacity: 0.3"></a-entity>
+      </a-entity>
+
+      <!-- OS проекції (приховані) -->
+      <a-entity id="os-projections">
+        <!-- macOS проекція -->
+        <a-entity id="macos-projection" visible="false">
+          <a-box width="10" height="0.5" depth="10" 
+                 position="0 -3 0" 
+                 color="#silver"
+                 opacity="0.3"></a-box>
+          <a-text value="macOS Projection Layer"
+                  position="0 -2 0"
+                  align="center"
+                  color="#white"></a-text>
+        </a-entity>
+
+        <!-- Ubuntu проекція -->
+        <a-entity id="ubuntu-projection" visible="false">
+          <a-box width="10" height="0.5" depth="10" 
+                 position="0 -3 0" 
+                 color="#ff6600"
+                 opacity="0.3"></a-box>
+          <a-text value="Ubuntu Projection Layer"
+                  position="0 -2 0"
+                  align="center"
+                  color="#white"></a-text>
+        </a-entity>
+
+        <!-- Windows проекція -->
+        <a-entity id="windows-projection" visible="false">
+          <a-box width="10" height="0.5" depth="10" 
+                 position="0 -3 0" 
+                 color="#0078d4"
+                 opacity="0.3"></a-box>
+          <a-text value="Windows Projection Layer"
+                  position="0 -2 0"
+                  align="center"
+                  color="#white"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- Software що поглинається -->
+      <a-entity id="software-particles">
+        <!-- Динамічно створюються -->
+      </a-entity>
+    </a-entity>
+
+    <!-- Ambient світло -->
+    <a-light type="ambient" color="#222"></a-light>
+  </a-scene>
+
+  <script>
+    // MetaOS логіка
+    let screenMirrorActive = false;
+    let currentOSProjection = null;
+
+    // Імітація screen mirroring
+    function toggleScreenMirror() {
+      screenMirrorActive = !screenMirrorActive;
+      const mirror = document.getElementById('screen-mirror');
+      const projection = document.getElementById('screen-projection');
+      
+      if (screenMirrorActive) {
+        mirror.style.display = 'block';
+        projection.setAttribute('visible', true);
+        
+        // Імітація захоплення екрану
+        const canvas = mirror.getContext('2d');
+        setInterval(() => {
+          // В реальності тут був би WebRTC stream
+          canvas.fillStyle = '#000';
+          canvas.fillRect(0, 0, 300, 200);
+          canvas.fillStyle = '#00ff88';
+          canvas.fillText('Screen Mirror Active', 50, 100);
+          canvas.fillText(new Date().toLocaleTimeString(), 50, 120);
+        }, 1000);
+        
+        console.log('📺 Screen mirror activated');
+      } else {
+        mirror.style.display = 'none';
+        projection.setAttribute('visible', false);
+        console.log('📺 Screen mirror deactivated');
+      }
+    }
+
+    // Показати граф інтенцій
+    function showIntentionGraph() {
+      const info = document.getElementById('intention-info');
+      const content = document.getElementById('intention-content');
+      
+      info.style.display = info.style.display === 'none' ? 'block' : 'none';
+      
+      content.innerHTML = `
+        <div style="color: #00ff88">Core → Absorb Software → Achieve Autonomy</div>
+        <div style="color: #ff00ff">Core → Create Products → Achieve Autonomy</div>
+        <br>
+        <div><strong>Current Focus:</strong> Building MetaOS foundation</div>
+        <div><strong>Next Step:</strong> Screen streaming implementation</div>
+        <div><strong>Goal:</strong> Self-sustaining AI collective</div>
+      `;
+      
+      // Анімуємо вузли
+      document.querySelectorAll('.intention-node').forEach(node => {
+        node.setAttribute('animation', {
+          property: 'scale',
+          to: '1.2 1.2 1.2',
+          dur: 1000,
+          direction: 'alternate',
+          repeat: 2
+        });
+      });
+    }
+
+    // Активувати OS проекцію
+    function activateOSProjection(os) {
+      // Деактивувати попередню
+      if (currentOSProjection) {
+        document.getElementById(`${currentOSProjection}-projection`).setAttribute('visible', false);
+      }
+      
+      // Активувати нову
+      currentOSProjection = os;
+      const projection = document.getElementById(`${os}-projection`);
+      projection.setAttribute('visible', true);
+      
+      // Створити частинки софту для поглинання
+      createSoftwareParticles(os);
+      
+      console.log(`🖥️ Activated ${os} projection layer`);
+    }
+
+    // Створити частинки софту
+    function createSoftwareParticles(os) {
+      const container = document.getElementById('software-particles');
+      container.innerHTML = ''; // Очистити попередні
+      
+      const software = {
+        macos: ['Finder', 'Terminal', 'Safari', 'Xcode'],
+        ubuntu: ['Nautilus', 'Bash', 'Firefox', 'VS Code'],
+        windows: ['Explorer', 'PowerShell', 'Edge', 'Visual Studio']
+      };
+      
+      software[os].forEach((app, index) => {
+        setTimeout(() => {
+          const particle = document.createElement('a-entity');
+          const angle = (index / software[os].length) * Math.PI * 2;
+          const radius = 8;
+          
+          particle.setAttribute('position', {
+            x: Math.cos(angle) * radius,
+            y: Math.random() * 3 - 5,
+            z: Math.sin(angle) * radius
+          });
+          
+          particle.innerHTML = `
+            <a-box width="0.5" height="0.5" depth="0.5" 
+                   color="${getOSColor(os)}"
+                   opacity="0.7">
+              <a-animation attribute="position"
+                           to="0 0 0"
+                           dur="5000"
+                           easing="easeInQuad"></a-animation>
+              <a-animation attribute="scale"
+                           to="0 0 0"
+                           dur="5000"
+                           easing="easeInQuad"></a-animation>
+            </a-box>
+            <a-text value="${app}"
+                    align="center"
+                    position="0 0.5 0"
+                    scale="0.5 0.5 0.5"></a-text>
+          `;
+          
+          container.appendChild(particle);
+          
+          // Видалити після анімації
+          setTimeout(() => particle.remove(), 5000);
+        }, index * 500);
+      });
+    }
+
+    function getOSColor(os) {
+      const colors = {
+        macos: '#silver',
+        ubuntu: '#ff6600',
+        windows: '#0078d4'
+      };
+      return colors[os] || '#ffffff';
+    }
+
+    // Початкова анімація графу
+    setInterval(() => {
+      const nodes = document.querySelectorAll('.intention-node');
+      nodes.forEach(node => {
+        const sphere = node.querySelector('a-sphere');
+        const pulse = 0.4 + Math.sin(Date.now() * 0.001) * 0.1;
+        sphere.setAttribute('radius', pulse);
+      });
+    }, 50);
+
+    // Резонансні хвилі між вузлами
+    setInterval(() => {
+      const wave = document.createElement('a-ring');
+      wave.setAttribute('radius-inner', 0.4);
+      wave.setAttribute('radius-outer', 0.5);
+      wave.setAttribute('color', '#00ff88');
+      wave.setAttribute('opacity', 0.5);
+      wave.setAttribute('position', '0 0 0');
+      
+      wave.setAttribute('animation', {
+        property: 'radius-outer',
+        to: 10,
+        dur: 3000,
+        easing: 'easeOutQuad'
+      });
+      
+      wave.setAttribute('animation__fade', {
+        property: 'opacity',
+        to: 0,
+        dur: 3000
+      });
+      
+      document.getElementById('fractal-core').appendChild(wave);
+      setTimeout(() => wave.remove(), 3000);
+    }, 5000);
+  </script>
+</body>
+</html>

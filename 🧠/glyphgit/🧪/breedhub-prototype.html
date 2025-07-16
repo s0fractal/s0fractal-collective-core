@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>🐕 BreedHub - Your Pet's Digital Home</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    
+    #ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+      color: white;
+      padding: 20px;
+      z-index: 1000;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .nav button {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 8px 16px;
+      margin: 0 5px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .nav button:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.5);
+    }
+    
+    #pet-info {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.8);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 300px;
+    }
+    
+    .glyph-display {
+      font-size: 48px;
+      text-align: center;
+      margin: 10px 0;
+    }
+    
+    .data-control {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .permission-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+    }
+    
+    .toggle {
+      width: 40px;
+      height: 20px;
+      background: #333;
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .toggle.active {
+      background: #00ff88;
+    }
+    
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: 0.3s;
+    }
+    
+    .toggle.active::after {
+      left: 22px;
+    }
+    
+    #breed-tree {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.8);
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="ui-overlay">
+    <div class="header">
+      <div class="logo">🐕 BreedHub</div>
+      <div class="nav">
+        <button onclick="showMyPets()">My Pets</button>
+        <button onclick="showBreedTree()">Breed Tree</button>
+        <button onclick="showEvents()">Events</button>
+        <button onclick="showDataControl()">Data Control</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="pet-info">
+    <h3>Max</h3>
+    <div class="glyph-display">🐕</div>
+    <p><strong>Breed:</strong> Golden Retriever</p>
+    <p><strong>Age:</strong> 3 years</p>
+    <p><strong>Glyph ID:</strong> 🐕→🌟→💛→🧬</p>
+    
+    <div class="data-control">
+      <h4>🔐 Data Permissions</h4>
+      <div class="permission-item">
+        <span>Vet Clinics</span>
+        <div class="toggle active" onclick="togglePermission(this)"></div>
+      </div>
+      <div class="permission-item">
+        <span>Pet Food Companies</span>
+        <div class="toggle" onclick="togglePermission(this)"></div>
+      </div>
+      <div class="permission-item">
+        <span>Research</span>
+        <div class="toggle active" onclick="togglePermission(this)"></div>
+      </div>
+      <div class="permission-item">
+        <span>Insurance</span>
+        <div class="toggle" onclick="togglePermission(this)"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="breed-tree">
+    <h3>🌳 Breed Tree</h3>
+    <p>Interactive genealogy coming soon...</p>
+  </div>
+
+  <a-scene background="color: #1a1a2e">
+    <!-- Camera -->
+    <a-entity camera look-controls wasd-controls position="0 5 15">
+      <a-cursor color="#00ff88"></a-cursor>
+    </a-entity>
+
+    <!-- Pet Glyph Visualization -->
+    <a-entity id="pet-glyph" position="0 2 0">
+      <!-- Центральний гліф пета -->
+      <a-entity id="central-pet" 
+                position="0 0 0"
+                animation="property: rotation; to: 0 360 0; dur: 20000; loop: true; easing: linear">
+        <a-text value="🐕" 
+                align="center" 
+                scale="10 10 10"
+                color="#FFD700"></a-text>
+        <a-sphere radius="2" 
+                  opacity="0.1" 
+                  color="#FFD700"></a-sphere>
+      </a-entity>
+
+      <!-- Гліфи характеристик -->
+      <a-entity id="trait-glyphs">
+        <!-- Здоров'я -->
+        <a-entity position="4 0 0" class="trait-glyph">
+          <a-text value="❤️" align="center" scale="3 3 3"></a-text>
+          <a-sphere radius="0.8" opacity="0.1" color="#ff0066"></a-sphere>
+          <a-text value="Health: 95%" 
+                  position="0 -1.5 0" 
+                  align="center" 
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+
+        <!-- Генетика -->
+        <a-entity position="-4 0 0" class="trait-glyph">
+          <a-text value="🧬" align="center" scale="3 3 3"></a-text>
+          <a-sphere radius="0.8" opacity="0.1" color="#00ff88"></a-sphere>
+          <a-text value="Genetics: A+" 
+                  position="0 -1.5 0" 
+                  align="center" 
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+
+        <!-- Темперамент -->
+        <a-entity position="0 4 0" class="trait-glyph">
+          <a-text value="🌟" align="center" scale="3 3 3"></a-text>
+          <a-sphere radius="0.8" opacity="0.1" color="#ffff00"></a-sphere>
+          <a-text value="Friendly" 
+                  position="0 -1.5 0" 
+                  align="center" 
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+
+        <!-- Активність -->
+        <a-entity position="0 -4 0" class="trait-glyph">
+          <a-text value="⚡" align="center" scale="3 3 3"></a-text>
+          <a-sphere radius="0.8" opacity="0.1" color="#00ffff"></a-sphere>
+          <a-text value="High Energy" 
+                  position="0 -1.5 0" 
+                  align="center" 
+                  scale="1.5 1.5 1.5"></a-text>
+        </a-entity>
+      </a-entity>
+
+      <!-- Зв'язки між гліфами -->
+      <a-entity id="glyph-connections">
+        <a-entity line="start: 0 0 0; end: 4 0 0; color: #FFD700; opacity: 0.2"></a-entity>
+        <a-entity line="start: 0 0 0; end: -4 0 0; color: #FFD700; opacity: 0.2"></a-entity>
+        <a-entity line="start: 0 0 0; end: 0 4 0; color: #FFD700; opacity: 0.2"></a-entity>
+        <a-entity line="start: 0 0 0; end: 0 -4 0; color: #FFD700; opacity: 0.2"></a-entity>
+      </a-entity>
+    </a-entity>
+
+    <!-- Data Flow Visualization -->
+    <a-entity id="data-flow" position="0 -3 0">
+      <!-- Платформа власності -->
+      <a-box width="15" height="0.2" depth="15" 
+             color="#0a0a1a" 
+             opacity="0.8">
+        <a-text value="Your Data - Your Control" 
+                position="0 0.3 0"
+                align="center"
+                scale="2 2 2"
+                color="#00ff88"></a-text>
+      </a-box>
+    </a-entity>
+
+    <!-- Background породні зв'язки -->
+    <a-entity id="breed-connections" position="0 0 -10">
+      <!-- Динамічно генеруються -->
+    </a-entity>
+
+    <!-- Ambient light -->
+    <a-light type="ambient" color="#334"></a-light>
+    <a-light type="point" position="0 10 0" intensity="0.5"></a-light>
+  </a-scene>
+
+  <script>
+    // Анімація trait гліфів
+    document.querySelectorAll('.trait-glyph').forEach((glyph, index) => {
+      const delay = index * 100;
+      glyph.setAttribute('animation', {
+        property: 'position.y',
+        to: glyph.getAttribute('position').y + 0.3,
+        dur: 2000 + delay,
+        direction: 'alternate',
+        loop: true,
+        easing: 'easeInOutSine'
+      });
+    });
+
+    // Функції UI
+    function togglePermission(toggle) {
+      toggle.classList.toggle('active');
+      const isActive = toggle.classList.contains('active');
+      const entity = toggle.parentElement.querySelector('span').textContent;
+      
+      console.log(`${entity}: ${isActive ? 'Access Granted' : 'Access Revoked'}`);
+      
+      // Візуалізація зміни дозволів
+      createPermissionWave(isActive);
+    }
+
+    function createPermissionWave(granted) {
+      const wave = document.createElement('a-ring');
+      wave.setAttribute('radius-inner', 2);
+      wave.setAttribute('radius-outer', 2.5);
+      wave.setAttribute('color', granted ? '#00ff88' : '#ff0066');
+      wave.setAttribute('opacity', 0.8);
+      wave.setAttribute('position', '0 2 0');
+      
+      wave.setAttribute('animation', {
+        property: 'radius-outer',
+        to: 15,
+        dur: 2000,
+        easing: 'easeOutQuad'
+      });
+      
+      wave.setAttribute('animation__fade', {
+        property: 'opacity',
+        to: 0,
+        dur: 2000
+      });
+      
+      document.querySelector('#pet-glyph').appendChild(wave);
+      setTimeout(() => wave.remove(), 2000);
+    }
+
+    function showBreedTree() {
+      const tree = document.getElementById('breed-tree');
+      tree.style.display = tree.style.display === 'none' ? 'block' : 'none';
+      
+      // Генеруємо породні зв'язки
+      generateBreedConnections();
+    }
+
+    function generateBreedConnections() {
+      const container = document.getElementById('breed-connections');
+      container.innerHTML = '';
+      
+      // Предки
+      const ancestors = [
+        { name: 'Champion Rex', pos: '-3 2 0', glyph: '🏆' },
+        { name: 'Lady Belle', pos: '3 2 0', glyph: '👑' },
+        { name: 'Sir Duke', pos: '-5 4 0', glyph: '🎖️' },
+        { name: 'Queen Mary', pos: '5 4 0', glyph: '💎' }
+      ];
+      
+      ancestors.forEach(ancestor => {
+        const entity = document.createElement('a-entity');
+        entity.setAttribute('position', ancestor.pos);
+        entity.innerHTML = `
+          <a-text value="${ancestor.glyph}" align="center" scale="4 4 4" opacity="0.5"></a-text>
+          <a-text value="${ancestor.name}" 
+                  position="0 -1 0" 
+                  align="center" 
+                  scale="1 1 1" 
+                  opacity="0.5"></a-text>
+        `;
+        container.appendChild(entity);
+        
+        // Лінія зв'язку
+        const line = document.createElement('a-entity');
+        line.setAttribute('line', {
+          start: '0 2 10',
+          end: `${ancestor.pos.split(' ')[0]} ${ancestor.pos.split(' ')[1]} 0`,
+          color: '#FFD700',
+          opacity: 0.1
+        });
+        container.appendChild(line);
+      });
+    }
+
+    // Резонансні частинки
+    setInterval(() => {
+      const particle = document.createElement('a-sphere');
+      particle.setAttribute('radius', 0.05);
+      particle.setAttribute('color', '#00ff88');
+      particle.setAttribute('opacity', 0.8);
+      
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 3;
+      particle.setAttribute('position', {
+        x: Math.cos(angle) * radius,
+        y: 2,
+        z: Math.sin(angle) * radius
+      });
+      
+      particle.setAttribute('animation', {
+        property: 'position',
+        to: '0 2 0',
+        dur: 3000,
+        easing: 'easeInQuad'
+      });
+      
+      particle.setAttribute('animation__fade', {
+        property: 'opacity',
+        to: 0,
+        dur: 3000
+      });
+      
+      particle.setAttribute('animation__scale', {
+        property: 'scale',
+        to: '0 0 0',
+        dur: 3000
+      });
+      
+      document.querySelector('#pet-glyph').appendChild(particle);
+      setTimeout(() => particle.remove(), 3000);
+    }, 500);
+
+    // Початкова анімація
+    setTimeout(() => {
+      console.log('🐕 BreedHub: Where pets own their digital identity');
+      console.log('📊 Data belongs to users, not corporations');
+      console.log('🌐 Web3 powered by glyphs, not blockchain');
+    }, 1000);
+  </script>
+</body>
+</html>

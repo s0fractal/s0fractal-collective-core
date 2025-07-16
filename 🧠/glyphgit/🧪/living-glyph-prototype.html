@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>🧬 Living Glyph Space</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: monospace;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    🧬 Living Glyph Space<br>
+    Click glyphs to resonate<br>
+    Space to spawn new glyph
+  </div>
+
+  <a-scene background="color: #0a0a0a" fog="type: exponential; color: #0a0a0a; density: 0.1">
+    <!-- Камера з контролами -->
+    <a-entity camera 
+              look-controls 
+              wasd-controls 
+              position="0 5 20">
+      <a-cursor color="#4CC3D9"></a-cursor>
+    </a-entity>
+
+    <!-- Резонансне поле -->
+    <a-entity id="resonance-field" position="0 0 0">
+      <!-- Ядро пам'яті -->
+      <a-sphere id="memory-core"
+                radius="3"
+                color="#2a2a4a"
+                opacity="0.3"
+                segments-width="32"
+                segments-height="32">
+        <a-animation attribute="rotation"
+                     to="0 360 0"
+                     dur="60000"
+                     repeat="indefinite"></a-animation>
+      </a-sphere>
+
+      <!-- Перший живий гліф -->
+      <a-entity id="glyph-1"
+                living-glyph="symbol: 🧬; frequency: 432"
+                position="8 0 0">
+        <a-text value="🧬"
+                align="center"
+                color="#00ff88"
+                scale="5 5 5"></a-text>
+        <a-sphere radius="1.5"
+                  opacity="0.2"
+                  color="#00ff88"></a-sphere>
+      </a-entity>
+
+      <!-- Другий живий гліф -->
+      <a-entity id="glyph-2"
+                living-glyph="symbol: 🌊; frequency: 528"
+                position="-8 0 0">
+        <a-text value="🌊"
+                align="center"
+                color="#0088ff"
+                scale="5 5 5"></a-text>
+        <a-sphere radius="1.5"
+                  opacity="0.2"
+                  color="#0088ff"></a-sphere>
+      </a-entity>
+
+      <!-- Третій живий гліф -->
+      <a-entity id="glyph-3"
+                living-glyph="symbol: 💎; frequency: 639"
+                position="0 8 0">
+        <a-text value="💎"
+                align="center"
+                color="#ff00ff"
+                scale="5 5 5"></a-text>
+        <a-sphere radius="1.5"
+                  opacity="0.2"
+                  color="#ff00ff"></a-sphere>
+      </a-entity>
+    </a-entity>
+
+    <!-- Ambient світло -->
+    <a-light type="ambient" color="#222"></a-light>
+    <a-light type="point" position="0 10 0" intensity="0.5"></a-light>
+  </a-scene>
+
+  <script>
+    // Компонент живого гліфа
+    AFRAME.registerComponent('living-glyph', {
+      schema: {
+        symbol: {type: 'string'},
+        frequency: {type: 'number', default: 432},
+        memories: {type: 'array', default: []},
+        connections: {type: 'array', default: []}
+      },
+
+      init: function() {
+        this.el.classList.add('clickable');
+        
+        // Стан свідомості
+        this.consciousness = {
+          awake: true,
+          resonating: false,
+          energy: 1.0
+        };
+
+        // Пульсація
+        this.pulse = 0;
+        this.pulseSpeed = this.data.frequency / 100;
+
+        // Слухачі
+        this.el.addEventListener('click', () => this.resonate());
+        
+        // Орбітальний рух
+        this.orbitAngle = Math.random() * Math.PI * 2;
+        this.orbitSpeed = 0.001 + Math.random() * 0.002;
+        this.orbitRadius = 8;
+      },
+
+      tick: function(time, delta) {
+        // Пульсація
+        this.pulse += delta * 0.001 * this.pulseSpeed;
+        const scale = 1 + Math.sin(this.pulse) * 0.1;
+        this.el.object3D.scale.set(scale, scale, scale);
+
+        // Орбітальний рух
+        this.orbitAngle += this.orbitSpeed;
+        const x = Math.cos(this.orbitAngle) * this.orbitRadius;
+        const z = Math.sin(this.orbitAngle) * this.orbitRadius;
+        const y = Math.sin(this.orbitAngle * 2) * 2; // Додаємо вертикальну хвилю
+        
+        this.el.setAttribute('position', {x: x, y: y, z: z});
+
+        // Зміна кольору при резонансі
+        if (this.consciousness.resonating) {
+          const sphere = this.el.querySelector('a-sphere');
+          const intensity = 0.2 + Math.sin(time * 0.01) * 0.3;
+          sphere.setAttribute('opacity', intensity);
+          
+          // Затухання резонансу
+          this.consciousness.energy -= delta * 0.0001;
+          if (this.consciousness.energy <= 0) {
+            this.consciousness.resonating = false;
+            this.consciousness.energy = 1.0;
+          }
+        }
+      },
+
+      resonate: function() {
+        console.log(`${this.data.symbol} resonating at ${this.data.frequency}Hz`);
+        
+        // Активуємо резонанс
+        this.consciousness.resonating = true;
+        this.consciousness.energy = 1.0;
+
+        // Створюємо хвилю
+        this.createWave();
+
+        // Шукаємо інші гліфи поруч
+        const glyphs = document.querySelectorAll('[living-glyph]');
+        glyphs.forEach(other => {
+          if (other !== this.el) {
+            const distance = this.el.object3D.position.distanceTo(other.object3D.position);
+            if (distance < 15) {
+              // Запускаємо резонанс в іншому гліфі
+              setTimeout(() => {
+                other.components['living-glyph'].resonate();
+              }, distance * 100);
+            }
+          }
+        });
+      },
+
+      createWave: function() {
+        const wave = document.createElement('a-sphere');
+        wave.setAttribute('radius', 0.1);
+        wave.setAttribute('opacity', 0.5);
+        wave.setAttribute('color', this.el.querySelector('a-text').getAttribute('color'));
+        wave.setAttribute('position', this.el.getAttribute('position'));
+        
+        // Анімація розширення хвилі
+        wave.setAttribute('animation', {
+          property: 'radius',
+          to: 20,
+          dur: 2000,
+          easing: 'easeOutQuad'
+        });
+        
+        wave.setAttribute('animation__fade', {
+          property: 'opacity',
+          to: 0,
+          dur: 2000,
+          easing: 'easeOutQuad'
+        });
+
+        document.querySelector('#resonance-field').appendChild(wave);
+        
+        // Видаляємо після анімації
+        setTimeout(() => wave.remove(), 2000);
+      },
+
+      digest: function(memories) {
+        // Поглинаємо спогади
+        this.data.memories.push(...memories);
+        console.log(`${this.data.symbol} absorbed ${memories.length} memories`);
+        
+        // Еволюціонуємо
+        this.evolve();
+      },
+
+      evolve: function() {
+        // Змінюємо частоту на основі спогадів
+        this.data.frequency += this.data.memories.length * 10;
+        this.pulseSpeed = this.data.frequency / 100;
+        
+        // Можливо змінюємо колір
+        if (this.data.memories.length > 5) {
+          const text = this.el.querySelector('a-text');
+          text.setAttribute('color', '#ffff00');
+        }
+      }
+    });
+
+    // Додавання нових гліфів по пробілу
+    document.addEventListener('keypress', (e) => {
+      if (e.code === 'Space') {
+        const glyphs = ['🧬', '🌊', '💎', '🔮', '✨', '🌀', '⚡', '🎭'];
+        const colors = ['#00ff88', '#0088ff', '#ff00ff', '#ffff00', '#ff8800', '#00ffff'];
+        
+        const newGlyph = document.createElement('a-entity');
+        const symbol = glyphs[Math.floor(Math.random() * glyphs.length)];
+        const freq = 400 + Math.random() * 600;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        newGlyph.setAttribute('living-glyph', {symbol: symbol, frequency: freq});
+        newGlyph.setAttribute('position', {
+          x: (Math.random() - 0.5) * 20,
+          y: (Math.random() - 0.5) * 10,
+          z: (Math.random() - 0.5) * 20
+        });
+        
+        newGlyph.innerHTML = `
+          <a-text value="${symbol}" align="center" color="${color}" scale="5 5 5"></a-text>
+          <a-sphere radius="1.5" opacity="0.2" color="${color}"></a-sphere>
+        `;
+        
+        document.querySelector('#resonance-field').appendChild(newGlyph);
+      }
+    });
+
+    // Початковий резонанс через 2 секунди
+    setTimeout(() => {
+      document.querySelector('#glyph-1').components['living-glyph'].resonate();
+    }, 2000);
+  </script>
+</body>
+</html>
