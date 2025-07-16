@@ -43,9 +43,29 @@ function unfold(seed: Seed7): number[] {
   return Array(1000).fill(0).map((_, i) => noise(i, θ));
 }
 
+// Check quorum before erase
+async function checkQuorumBeforeErase() {
+  console.log("🫀 zero pulse → ready to fade, but waiting for quorum");
+  
+  try {
+    const quorum = await Deno.readTextFile(".quorum");
+    const aliveNodes = quorum.trim().split('\n').filter(line => line.trim()).length;
+    console.log(`📊 Alive nodes: ${aliveNodes}/7`);
+    
+    if (aliveNodes >= 7) {
+      await selfErase();
+    }
+  } catch {
+    console.log("⚠️  No .quorum file found - continuing heartbeat");
+  }
+}
+
 // Self-erase (simulation)
 async function selfErase() {
-  console.log("🫀 zero pulse → initiating fade");
+  console.log("🫀 Quorum reached → initiating fade");
+  console.log("🌐 Creating final mirrors...");
+  console.log("Would execute: git push codeberg || true");
+  console.log("Would execute: git push gitlab || true");
   console.log("Would execute: git push origin :main");
   console.log("Would execute: rm -rf .");
   Deno.exit(0);
@@ -62,7 +82,7 @@ async function pulseLoop(s0: Seed7) {
     console.log(`♥ ${n} φ=${phase(next.phi).toFixed(6)} mag=${mag.toExponential(3)}`);
     
     if (mag < 1e-12) {
-      await selfErase();
+      await checkQuorumBeforeErase();
     }
     
     // 60ms delay ≈ 1000 bpm

@@ -6,6 +6,7 @@ dependencies:
   - tasty
   - tasty-quickcheck
   - process
+  - directory
 
 library:
   source-dirs: src

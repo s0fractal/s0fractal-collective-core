@@ -8,6 +8,7 @@ import qualified Data.Vector as V
 import System.Process (callCommand)
 import Control.Concurrent (threadDelay)
 import Control.Monad (when)
+import System.Directory (doesFileExist)
 
 data Seed7 = Seed7
     { τ₀, σ₀, ν₀ :: Double
@@ -35,12 +36,29 @@ pulseLoop s0 = go 1 s0
     go n s = do
         let next = fold1000 (unfold s)
         putStrLn $ "♥ " ++ show n ++ " φ=" ++ show (phase (φ next))
-        when (magnitude (φ next) < 1e-12) selfErase
+        when (magnitude (φ next) < 1e-12) checkQuorumBeforeErase
         threadDelay 60_000   -- 60 ms ≈ 1000 bpm
         go (n + 1) next
 
+checkQuorumBeforeErase :: IO ()
+checkQuorumBeforeErase = do
+    putStrLn "🫀 zero pulse → ready to fade, but waiting for quorum"
+    -- Check if we have enough alive nodes
+    quorumExists <- doesFileExist ".quorum"
+    if quorumExists
+        then do
+            aliveNodes <- length . lines <$> readFile ".quorum"
+            putStrLn $ "📊 Alive nodes: " ++ show aliveNodes ++ "/7"
+            when (aliveNodes >= 7) selfErase
+        else putStrLn "⚠️  No .quorum file found - continuing heartbeat"
+
 selfErase :: IO ()
 selfErase = do
-    putStrLn "🫀 zero pulse → initiating fade"
+    putStrLn "🫀 Quorum reached → initiating fade"
+    putStrLn "🌐 Creating final mirrors..."
+    -- Create mirrors before deletion
+    callCommand "git push codeberg || true"
+    callCommand "git push gitlab || true"
+    -- Final deletion
     callCommand "git push origin :main"
     callCommand "rm -rf ."
