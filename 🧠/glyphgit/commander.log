@@ -1,9 +1,0 @@
-
-🌐 WEB COMMANDER
-━━━━━━━━━━━━━━━━
-📡 Starting on port 7343
-
-✨ Web Commander ready!
-   Local: http://localhost:7343
-   Network: http://$(hostname):7343
-Listening on http://0.0.0.0:7343/ (http://localhost:7343/)
