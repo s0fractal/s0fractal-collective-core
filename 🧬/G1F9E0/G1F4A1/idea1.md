@@ -1,1 +1,0 @@
-# Glyphs are dimensions!
