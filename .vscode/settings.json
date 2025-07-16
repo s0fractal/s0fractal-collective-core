@@ -30,5 +30,25 @@
   "editor.defaultFormatter": "denoland.vscode-deno",
   "editor.formatOnSave": true,
   "javascript.validate.enable": false,
-  "typescript.validate.enable": false
+  "typescript.validate.enable": false,
+  "material-icon-theme.folders.associations": {
+    "G1F30A": "ocean",
+    "G1F4A1": "idea", 
+    "G1F4BB": "computer",
+    "G1F4BE": "disk",
+    "G1F4DC": "docs",
+    "G1F9E0": "brain",
+    "G1F9EC": "biology",
+    "G1F9EA": "test",
+    "G1F310": "global",
+    "G1FAE7": "components"
+  },
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "**/waves": true,
+    "**/.glyphgit": true
+  }
 }

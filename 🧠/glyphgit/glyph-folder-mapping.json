@@ -1,0 +1,28 @@
+{
+  "mappings": {
+    "🌊": "G1F30A",
+    "💡": "G1F4A1", 
+    "💻": "G1F4BB",
+    "💾": "G1F4BE",
+    "📜": "G1F4DC",
+    "🧠": "G1F9E0",
+    "🧬": "G1F9EC",
+    "🧪": "G1F9EA",
+    "🌐": "G1F310",
+    "🫧": "G1FAE7"
+  },
+  "vscode_settings": {
+    "files.associations": {
+      "**/G1F30A/**": "ocean",
+      "**/G1F4A1/**": "idea",
+      "**/G1F4BB/**": "computer",
+      "**/G1F4BE/**": "disk",
+      "**/G1F4DC/**": "scroll",
+      "**/G1F9E0/**": "brain",
+      "**/G1F9EC/**": "dna",
+      "**/G1F9EA/**": "test-tube",
+      "**/G1F310/**": "globe",
+      "**/G1FAE7/**": "bubbles"
+    }
+  }
+}
