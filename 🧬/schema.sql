@@ -14,7 +14,8 @@ create table if not exists "🧬" (
   "🤲" text,
   "🏠" text,
   "🎯" text,
-  "exec_ts" text
+  "exec_ts" text,
+  "📁" text -- шлях до гліф-папки (glyph://G1F415/)
 );
 
 -- 🧬_mutations — історія мутацій
