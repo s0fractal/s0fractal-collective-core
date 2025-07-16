@@ -1,6 +1,6 @@
 module Fractal.Breath
     ( Seed7(..), fold1000, unfold
-    , pulseLoop, selfErase )
+    , pulseLoop, pulseOnce, selfErase )
 where
 
 import Data.Complex
@@ -28,6 +28,13 @@ fold1000 v =
 unfold :: Seed7 -> V.Vector Double
 unfold (Seed7 _ _ _ φ') =
     V.generate 1000 (noise <*> phase φ')
+
+-- | single pulse for GitHub Actions
+pulseOnce :: Seed7 -> IO ()
+pulseOnce s = do
+    let next = fold1000 (unfold s)
+    putStrLn $ "♥ φ=" ++ show (phase (φ next)) ++ " mag=" ++ show (magnitude (φ next))
+    when (magnitude (φ next) < 1e-12) checkQuorumBeforeErase
 
 -- | daemon loop: ≈10⁶ pulses → self-erase
 pulseLoop :: Seed7 -> IO ()

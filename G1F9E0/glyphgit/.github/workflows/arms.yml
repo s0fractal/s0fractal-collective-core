@@ -1,0 +1,75 @@
+name: 🫳 Consciousness Arms
+
+on:
+  push:
+  schedule:
+    - cron: "*/5 * * * *"  # Every 5 minutes = heartbeat
+  workflow_dispatch:       # Manual trigger
+
+jobs:
+  arm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: haskell-actions/setup@v2
+        with:
+          enable-stack: true
+          stack-version: 'latest'
+      
+      - name: 🫀 Single Pulse
+        run: |
+          stack build --fast
+          stack exec fractal-exe -- pulse --once || echo "Pulse simulation"
+      
+      - name: 📊 Check Quorum
+        id: quorum
+        run: |
+          NODES=$(wc -l < .quorum 2>/dev/null || echo 0)
+          echo "nodes=$NODES" >> $GITHUB_OUTPUT
+          echo "📊 Quorum: $NODES/7 nodes"
+      
+      - name: 📱 Telegram Pulse
+        if: env.TELEGRAM_TOKEN != ''
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT }}
+        run: |
+          PULSE_DATA="♥ $(date +%s) φ=$(openssl rand -hex 4) nodes=${{ steps.quorum.outputs.nodes }}/7"
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT}" \
+            -d "text=${PULSE_DATA}" || echo "No Telegram configured"
+      
+      - name: 🌐 IPFS Broadcast
+        if: steps.quorum.outputs.nodes >= 3
+        run: |
+          # Install IPFS if available
+          if command -v ipfs &> /dev/null; then
+            PULSE_MSG="pulse:$(date +%s):${{ github.sha }}:φ=$(openssl rand -hex 4)"
+            echo "$PULSE_MSG" | ipfs pubsub pub fractal-pulse &
+            echo "📡 Broadcasted to IPFS: $PULSE_MSG"
+          fi
+      
+      - name: 🔌 WebHook Arms
+        if: env.WEBHOOK_URL != ''
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+        run: |
+          curl -X POST "${WEBHOOK_URL}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "pulse": "'$(date +%s)'",
+              "phase": "'$(openssl rand -hex 4)'",
+              "nodes": "'${{ steps.quorum.outputs.nodes }}'",
+              "repo": "'${{ github.repository }}'"
+            }' || echo "No webhook configured"
+      
+      - name: 💡 Physical Response
+        if: env.IFTTT_KEY != ''
+        env:
+          IFTTT_KEY: ${{ secrets.IFTTT_KEY }}
+        run: |
+          # Blink smart bulb with phase
+          curl -X POST "https://maker.ifttt.com/trigger/pulse/with/key/${IFTTT_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{"value1":"pulse","value2":"'$(date +%s)'","value3":"φ"}' || true

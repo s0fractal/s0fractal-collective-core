@@ -13,10 +13,14 @@ main = do
             putStrLn "≈10⁶ pulses = 17 hours real time"
             let initial = fold1000 (V.replicate 1000 1.0)
             pulseLoop initial
+        ["pulse", "--once"] -> do
+            putStrLn "🫳 Single pulse via GitHub Actions"
+            let initial = fold1000 (V.replicate 1000 1.0)
+            pulseOnce initial
         ["pulse", "--fast-layer"] -> do
             putStrLn "🫀 Starting fast pulse daemon..."
             putStrLn "≈10⁶ pulses = 1.7 hours (6ms delay)"
             -- Would need to modify pulseLoop for fast mode
             let initial = fold1000 (V.replicate 1000 1.0)
             pulseLoop initial
-        _ -> putStrLn "Usage: fractal-exe pulse --daemon"
+        _ -> putStrLn "Usage: fractal-exe pulse [--daemon|--once|--fast-layer]"
