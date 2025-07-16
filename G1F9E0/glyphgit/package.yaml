@@ -1,0 +1,17 @@
+name: glyphgit
+version: 0.1.0.0
+dependencies:
+  - base >= 4.7 && < 5
+  - vector
+  - tasty
+  - tasty-quickcheck
+
+library:
+  source-dirs: src
+
+tests:
+  glyphgit-test:
+    main: Stress7D.hs
+    source-dirs: test
+    dependencies:
+      - glyphgit
