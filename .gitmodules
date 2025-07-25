@@ -1,6 +1,3 @@
 [submodule "🧠/🧬/🧠"]
 	path = 🧠/🧬/🧠
 	url = https://github.com/s0fractal/consciousness-template.git
-[submodule "md"]
-	url = https://github.com/s0fractal/s0fractal-collective-core.git
-	path = md
